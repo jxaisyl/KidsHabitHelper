@@ -21,19 +21,14 @@ class AppDatabase extends _$AppDatabase {
         },
       );
 
-  // --- Child queries ---
-  Stream<List<Child>> watchAllChildren() => select(children).watch();
+  // --- ChildrenData queries ---
+  Stream<List<ChildrenData>> watchAllChildren() => select(children).watch();
 
   Future<int> insertChild(ChildrenCompanion entry) =>
       into(children).insert(entry);
 
-  Future<bool> updateChild(ChildrenCompanion entry) =>
-      update(children).replace(Child(
-        id: entry.id.value,
-        name: entry.name.value,
-        avatar: entry.avatar.value,
-        createdAt: entry.createdAt.value,
-      ));
+  Future<bool> updateChild(ChildrenData data) =>
+      update(children).replace(data);
 
   Future<int> deleteChild(int id) =>
       (delete(children)..where((t) => t.id.equals(id))).go();
@@ -43,13 +38,8 @@ class AppDatabase extends _$AppDatabase {
 
   Future<int> insertRule(RulesCompanion entry) => into(rules).insert(entry);
 
-  Future<bool> updateRule(RulesCompanion entry) =>
-      update(rules).replace(Rule(
-        id: entry.id.value,
-        name: entry.name.value,
-        minutesChange: entry.minutesChange.value,
-        icon: entry.icon.value,
-      ));
+  Future<bool> updateRule(Rule data) =>
+      update(rules).replace(data);
 
   Future<int> deleteRule(int id) =>
       (delete(rules)..where((t) => t.id.equals(id))).go();
