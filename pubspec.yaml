@@ -17,6 +17,7 @@ dependencies:
   fl_chart: ^0.70.2
   go_router: ^17.2.3
   intl: ^0.20.1
+  sqlite3: ^3.3.0
 
 dev_dependencies:
   flutter_test:

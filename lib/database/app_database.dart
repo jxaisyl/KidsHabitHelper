@@ -1,5 +1,7 @@
 import 'package:drift/drift.dart';
+import 'package:drift/wasm.dart';
 import 'package:drift_flutter/drift_flutter.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 import 'tables.dart';
 
@@ -123,5 +125,23 @@ class AppDatabase extends _$AppDatabase {
 }
 
 QueryExecutor _openConnection() {
+  if (kIsWeb) {
+    return _webConnection();
+  }
   return driftDatabase(name: 'kids_habit_helper.db');
+}
+
+QueryExecutor _webConnection() {
+  return DatabaseConnection.delayed(Future.sync(() async {
+    final result = await WasmDatabase.open(
+      databaseName: 'kids_habit_helper',
+      sqlite3Uri: Uri.parse('sqlite3.wasm'),
+      driftWorkerUri: Uri.parse('drift_worker.js'),
+    );
+    if (result.missingFeatures.isNotEmpty) {
+      print('Using ${result.chosenImplementation} due to '
+          'missing features: ${result.missingFeatures}');
+    }
+    return result.resolvedExecutor;
+  }));
 }
