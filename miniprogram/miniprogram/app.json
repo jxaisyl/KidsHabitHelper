@@ -26,10 +26,15 @@
       {
         "pagePath": "pages/statistics/statistics",
         "text": "统计"
+      },
+      {
+        "pagePath": "pages/settings/settings",
+        "text": "设置"
       }
     ]
   },
   "sitemapLocation": "sitemap.json",
   "style": "v2",
-  "cloud": true
+  "cloud": true,
+  "lazyCodeLoading": "requiredComponents"
 }

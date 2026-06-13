@@ -29,6 +29,14 @@ Page({
     var openid = app.globalData.openid
 
     if (!openid) {
+      // 等待 openid，最多重试 10 次（5秒）
+      if (!that._retryCount) that._retryCount = 0
+      that._retryCount++
+      if (that._retryCount > 10) {
+        that.setData({ loading: false, isEmpty: true })
+        wx.showToast({ title: '请检查网络连接', icon: 'none' })
+        return Promise.resolve()
+      }
       setTimeout(function () { that.loadChildren() }, 500)
       return Promise.resolve()
     }

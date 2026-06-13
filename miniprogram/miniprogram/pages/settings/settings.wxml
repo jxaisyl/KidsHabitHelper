@@ -1,24 +1,61 @@
 <view class="container">
+  <!-- 数据统计 -->
   <view class="section-title mb-20">
-    <text class="section-text">数据</text>
+    <text class="section-text">数据概览</text>
+  </view>
+  <view class="stats-row flex-row">
+    <view class="stat-card card flex-1">
+      <text class="stat-num text-primary">{{childCount}}</text>
+      <text class="stat-label">孩子</text>
+    </view>
+    <view class="stat-card card flex-1">
+      <text class="stat-num text-primary">{{ruleCount}}</text>
+      <text class="stat-label">规则</text>
+    </view>
+    <view class="stat-card card flex-1">
+      <text class="stat-num text-primary">{{recordCount}}</text>
+      <text class="stat-label">记录</text>
+    </view>
+  </view>
+
+  <!-- 快捷操作 -->
+  <view class="section-title mt-30 mb-20">
+    <text class="section-text">快捷操作</text>
   </view>
   <view class="card">
-    <view class="setting-item flex-between" bindtap="onClearCache">
-      <text>清除缓存</text>
+    <view class="setting-item flex-between" bindtap="onGoAddChild">
+      <view class="flex-row">
+        <text class="setting-icon">👦</text>
+        <text>添加孩子</text>
+      </view>
+      <text class="text-secondary">▸</text>
+    </view>
+    <view class="setting-item flex-between" bindtap="onGoRuleManage">
+      <view class="flex-row">
+        <text class="setting-icon">📋</text>
+        <text>管理规则</text>
+      </view>
       <text class="text-secondary">▸</text>
     </view>
   </view>
 
+  <!-- 其他 -->
   <view class="section-title mt-30 mb-20">
     <text class="section-text">其他</text>
   </view>
   <view class="card">
-    <view class="setting-item flex-between" bindtap="onFeedback">
-      <text>意见反馈</text>
+    <view class="setting-item flex-between" bindtap="onClearCache">
+      <view class="flex-row">
+        <text class="setting-icon">🗑️</text>
+        <text>清除缓存</text>
+      </view>
       <text class="text-secondary">▸</text>
     </view>
     <view class="setting-item flex-between" bindtap="onAbout">
-      <text>关于</text>
+      <view class="flex-row">
+        <text class="setting-icon">ℹ️</text>
+        <text>关于</text>
+      </view>
       <text class="text-secondary text-bold">v{{version}} ▸</text>
     </view>
   </view>

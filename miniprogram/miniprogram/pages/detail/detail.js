@@ -24,7 +24,7 @@ Page({
     this.setData({ today: today })
 
     if (options.mode === 'add') {
-      this.setData({ mode: 'add' })
+      this.setData({ mode: 'add', loading: false })
       wx.setNavigationBarTitle({ title: '添加孩子' })
     } else if (options.childId) {
       this.setData({ childId: options.childId })
