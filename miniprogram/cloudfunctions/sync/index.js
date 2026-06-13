@@ -88,7 +88,7 @@ exports.main = async (event, context) => {
       Object.assign(storeData, fieldsToCopy)
       storeData.updatedAt = new Date().toISOString()
 
-      const { data: existing } = await db.collection(coll || collection)
+      const { data: existing } = await db.collection(collection)
         .where({ _id: docId, userId: uid }).limit(1).get()
 
       if (existing.length > 0) {
