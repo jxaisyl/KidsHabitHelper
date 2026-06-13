@@ -1,0 +1,89 @@
+<view class="container">
+  <view class="section-title mb-20" wx:if="{{!showForm}}">
+    <text class="section-text">奖惩规则</text>
+  </view>
+
+  <view wx:if="{{loading}}" class="empty-state mt-30">
+    <text class="empty-text">加载中...</text>
+  </view>
+
+  <view wx:if="{{rules.length === 0 && !loading && !showForm}}" class="empty-state mt-30">
+    <text class="empty-icon">📋</text>
+    <text class="empty-text">还没有规则</text>
+    <text class="empty-text">点击下方按钮添加第一条规则</text>
+  </view>
+
+  <view wx:if="{{!showForm}}">
+    <view
+      class="rule-item card"
+      wx:for="{{rules}}"
+      wx:key="_id"
+    >
+      <view class="flex-between">
+        <view class="rule-info">
+          <text class="rule-icon-text">{{item.icon}} {{item.name}}</text>
+          <text class="rule-value {{item.minutesChange >= 0 ? 'text-success' : 'text-danger'}}">
+            {{item.minutesChange >= 0 ? '+' : ''}}{{item.minutesChange}} 分钟
+          </text>
+        </view>
+        <view class="rule-actions flex-row">
+          <view class="action-btn edit-btn" data-rule="{{item}}" bindtap="onEditRule">
+            <text>编辑</text>
+          </view>
+          <view class="action-btn delete-btn" data-id="{{item._id}}" data-name="{{item.name}}" bindtap="onDeleteRule">
+            <text>删除</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <button class="btn-primary mt-30" bindtap="onShowAddForm">+ 添加规则</button>
+  </view>
+
+  <view wx:if="{{showForm}}" class="card">
+    <view class="form-title">{{editingRuleId ? '编辑规则' : '添加规则'}}</view>
+
+    <view class="form-group mb-30">
+      <text class="form-label">规则名称</text>
+      <input
+        class="form-input"
+        placeholder="例如：完成作业"
+        value="{{formName}}"
+        bindinput="onNameInput"
+      />
+    </view>
+
+    <view class="form-group mb-30">
+      <text class="form-label">分钟变化（正数奖励，负数扣减）</text>
+      <input
+        class="form-input"
+        type="number"
+        placeholder="例如：30 或 -15"
+        value="{{formMinutesChange}}"
+        bindinput="onMinutesInput"
+      />
+    </view>
+
+    <view class="form-group mb-30">
+      <text class="form-label">选择图标</text>
+      <view class="icon-picker">
+        <view
+          class="icon-option {{formIcon === item ? 'icon-selected' : ''}}"
+          wx:for="{{['✅','📖','🛁','🌙','🏃','🧹','🍎','💪','❌','📱','😢','⏰']}}"
+          wx:key="*this"
+          data-icon="{{item}}"
+          bindtap="onIconSelect"
+        >
+          <text>{{item}}</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="form-actions flex-row">
+      <button class="btn-secondary flex-1" bindtap="onCancelForm">取消</button>
+      <button class="btn-primary flex-1 ml-10" bindtap="onSubmitForm" disabled="{{submitting}}" loading="{{submitting}}">
+        保存
+      </button>
+    </view>
+  </view>
+</view>

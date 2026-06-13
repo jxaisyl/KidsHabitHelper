@@ -1,0 +1,77 @@
+.form-title {
+  font-size: 34rpx;
+  font-weight: bold;
+  color: var(--text-primary);
+  margin-bottom: 30rpx;
+}
+
+.rule-item {
+  padding: 20rpx 24rpx;
+}
+
+.rule-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.rule-icon-text {
+  font-size: 30rpx;
+  color: var(--text-primary);
+}
+
+.rule-value {
+  font-size: 28rpx;
+  font-weight: bold;
+  margin-top: 6rpx;
+}
+
+.rule-actions {
+  gap: 16rpx;
+}
+
+.action-btn {
+  padding: 10rpx 24rpx;
+  border-radius: 8rpx;
+  font-size: 24rpx;
+}
+
+.edit-btn {
+  background-color: #E3F2FD;
+  color: #1976D2;
+}
+
+.delete-btn {
+  background-color: #FFEBEE;
+  color: var(--danger-color);
+}
+
+.icon-picker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16rpx;
+}
+
+.icon-option {
+  width: 80rpx;
+  height: 80rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12rpx;
+  border: 2rpx solid var(--divider-color);
+  font-size: 36rpx;
+}
+
+.icon-option:active {
+  opacity: 0.7;
+}
+
+.icon-selected {
+  border-color: var(--primary-color);
+  background-color: #E0F2F1;
+}
+
+.form-actions {
+  gap: 20rpx;
+  margin-top: 20rpx;
+}

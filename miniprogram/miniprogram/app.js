@@ -1,37 +1,30 @@
-// app.js
 App({
   onLaunch: function () {
     if (!wx.cloud) {
       console.error('请使用 2.2.3 或以上的基础库以使用云能力')
-    } else {
-      wx.cloud.init({
-        traceUser: true
-      })
+      return
     }
 
-    this.globalData = {}
+    wx.cloud.init({
+      traceUser: true
+    })
 
-    // 获取用户 openid
     this.getOpenId()
   },
 
   getOpenId: function () {
-    if (wx.cloud) {
-      wx.cloud.callFunction({
-        name: 'login',
-        data: {}
-      }).then(res => {
-        this.globalData.openid = res.result.openid
-        this.globalData.userInfo = res.result.userInfo || null
-      }).catch(err => {
-        console.error('获取 openid 失败', err)
-      })
-    }
+    var that = this
+    wx.cloud.callFunction({
+      name: 'login',
+      data: {}
+    }).then(function (res) {
+      that.globalData.openid = res.result.openid
+    }).catch(function (err) {
+      console.error('获取 openid 失败', err)
+    })
   },
 
   globalData: {
-    openid: null,
-    userInfo: null,
-    currentChild: null
+    openid: null
   }
 })

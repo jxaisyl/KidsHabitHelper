@@ -1,0 +1,25 @@
+<view class="container">
+  <view class="section-title mb-20">
+    <text class="section-text">数据</text>
+  </view>
+  <view class="card">
+    <view class="setting-item flex-between" bindtap="onClearCache">
+      <text>清除缓存</text>
+      <text class="text-secondary">▸</text>
+    </view>
+  </view>
+
+  <view class="section-title mt-30 mb-20">
+    <text class="section-text">其他</text>
+  </view>
+  <view class="card">
+    <view class="setting-item flex-between" bindtap="onFeedback">
+      <text>意见反馈</text>
+      <text class="text-secondary">▸</text>
+    </view>
+    <view class="setting-item flex-between" bindtap="onAbout">
+      <text>关于</text>
+      <text class="text-secondary text-bold">v{{version}} ▸</text>
+    </view>
+  </view>
+</view>

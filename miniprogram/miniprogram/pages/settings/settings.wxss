@@ -1,0 +1,9 @@
+.setting-item {
+  padding: 24rpx 0;
+  font-size: 30rpx;
+  color: var(--text-primary);
+}
+
+.setting-item + .setting-item {
+  border-top: 1rpx solid var(--divider-color);
+}
