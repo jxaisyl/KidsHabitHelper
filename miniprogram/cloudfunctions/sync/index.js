@@ -88,10 +88,16 @@ exports.main = async (event, context) => {
       Object.assign(storeData, fieldsToCopy)
       storeData.updatedAt = new Date().toISOString()
 
-      const { data: existing } = await db.collection(collection)
-        .where({ _id: docId, userId: uid }).limit(1).get()
+      // 用 doc() 检查文档是否存在
+      let docExists = false
+      try {
+        await db.collection(collection).doc(docId).get()
+        docExists = true
+      } catch (e) {
+        docExists = false
+      }
 
-      if (existing.length > 0) {
+      if (docExists) {
         await db.collection(collection).doc(docId).update({ data: storeData })
       } else {
         storeData._id = docId
@@ -111,10 +117,9 @@ exports.main = async (event, context) => {
         return { error: 'missing-id', message: '缺少文档 ID' }
       }
 
-      const { data: doc } = await db.collection(collection)
-        .where({ _id: docId, userId: uid }).limit(1).get()
-
-      if (doc.length === 0) {
+      try {
+        await db.collection(collection).doc(docId).get()
+      } catch (e) {
         return { error: 'not-found', message: '文档不存在' }
       }
 
@@ -126,6 +131,6 @@ exports.main = async (event, context) => {
 
   } catch (err) {
     console.error('sync error:', err)
-    return { error: 'internal-error', message: '服务器错误' }
+    return { error: 'internal-error', message: '服务器错误: ' + (err.message || String(err)) }
   }
 }
