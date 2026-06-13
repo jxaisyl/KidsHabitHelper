@@ -6,6 +6,7 @@ App({
     }
 
     wx.cloud.init({
+      env: 'cloudbase-d7gdlreoq9bfaba40',
       traceUser: true
     })
 

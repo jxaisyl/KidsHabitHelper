@@ -23,9 +23,20 @@
       "ignore": [],
       "disablePlugins": [],
       "outputPath": ""
-    }
+    },
+    "compileWorklet": false,
+    "packNpmManually": false,
+    "packNpmRelationList": [],
+    "minifyWXSS": true,
+    "minifyWXML": true,
+    "localPlugins": false,
+    "disableUseStrict": false,
+    "useCompilerPlugins": false,
+    "condition": false,
+    "swc": false,
+    "disableSWC": true
   },
-  "appid": "your-appid-here",
+  "appid": "wx96ca310e00f3f1f0",
   "projectname": "kids-habit-helper",
   "cloudfunctionTemplateRoot": "",
   "condition": {},
@@ -36,9 +47,12 @@
   "packOptions": {
     "ignore": [
       {
-        "type": "file",
-        "value": ".gitignore"
+        "value": ".gitignore",
+        "type": "file"
       }
-    ]
-  }
+    ],
+    "include": []
+  },
+  "simulatorPluginLibVersion": {},
+  "editorSetting": {}
 }
