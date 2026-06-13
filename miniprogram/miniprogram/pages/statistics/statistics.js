@@ -1,5 +1,7 @@
-// pages/statistics/statistics.js
 const util = require('../../utils/util.js')
+const db = wx.cloud.database()
+const _ = db.command
+const app = getApp()
 
 Page({
   data: {
@@ -31,31 +33,33 @@ Page({
     this.loadChildren()
   },
 
-  onShow: function () {
-    if (this.data.selectedChildId) {
-      this.loadStatistics()
-    }
-  },
-
   loadChildren: function () {
     var that = this
-    wx.cloud.callFunction({
-      name: 'sync',
-      data: { action: 'getChildren' }
-    }).then(function (res) {
-      var children = res.result.data || []
-      that.setData({ children: children })
+    var openid = app.globalData.openid
 
-      if (children.length > 0) {
-        that.setData({
-          selectedChildId: children[0]._id,
-          selectedChildName: children[0].name
-        })
-        that.loadStatistics()
-      }
-    }).catch(function (err) {
-      console.error('加载孩子列表失败', err)
-    })
+    if (!openid) {
+      setTimeout(function () { that.loadChildren() }, 500)
+      return
+    }
+
+    db.collection('children')
+      .where({ userId: openid })
+      .orderBy('createdAt', 'asc')
+      .get()
+      .then(function (res) {
+        var children = res.data || []
+        that.setData({ children: children })
+        if (children.length > 0) {
+          that.setData({
+            selectedChildId: children[0]._id,
+            selectedChildName: children[0].name
+          })
+          that.loadStatistics()
+        }
+      })
+      .catch(function (err) {
+        console.error('加载孩子列表失败', err)
+      })
   },
 
   onChildChange: function (e) {
@@ -91,53 +95,64 @@ Page({
 
   loadStatistics: function () {
     var that = this
-    if (!that.data.selectedChildId) return
+    var openid = app.globalData.openid
+    if (!that.data.selectedChildId || !openid) return
 
     that.setData({ loading: true })
 
-    wx.cloud.callFunction({
-      name: 'sync',
-      data: {
-        action: 'getStatistics',
-        data: {
-          childId: that.data.selectedChildId,
-          startDate: that.data.startDate,
-          endDate: that.data.endDate
-        }
-      }
-    }).then(function (res) {
-      var result = res.result || {}
-      var records = result.records || []
-      var totalMinutes = 0
-      var positiveCount = 0
-      var negativeCount = 0
+    var startISO = that.data.startDate + 'T00:00:00.000Z'
+    var endISO = that.data.endDate + 'T23:59:59.999Z'
 
-      records.forEach(function (r) {
-        totalMinutes += r.minutes || 0
-        if (r.minutes >= 0) {
-          positiveCount++
-        } else {
-          negativeCount++
-        }
+    db.collection('records')
+      .where({
+        userId: openid,
+        childId: that.data.selectedChildId,
+        createdAt: _.gte(startISO).and(_.lte(endISO))
       })
+      .orderBy('createdAt', 'desc')
+      .get()
+      .then(function (res) {
+        var records = res.data
+        var totalMinutes = 0
+        var positiveCount = 0
+        var negativeCount = 0
 
-      var dayCount = Math.max(1, records.length > 0 ? 7 : 1)
+        records.forEach(function (r) {
+          totalMinutes += r.minutesChange || 0
+          if (r.minutesChange >= 0) positiveCount++
+          else negativeCount++
+        })
 
-      that.setData({
-        records: records,
-        summary: {
-          totalMinutes: totalMinutes,
-          positiveCount: positiveCount,
-          negativeCount: negativeCount,
-          dailyAvg: Math.round(totalMinutes / dayCount)
-        },
-        loading: false,
-        isEmpty: records.length === 0
+        return db.collection('rules')
+          .where({ userId: openid })
+          .get()
+          .then(function (rulesRes) {
+            var ruleMap = {}
+            rulesRes.data.forEach(function (r) { ruleMap[r._id] = r })
+            records.forEach(function (r) {
+              r.ruleName = r.ruleId && ruleMap[r.ruleId] ? ruleMap[r.ruleId].name : '自定义'
+            })
+
+            var dayCount = that.data.dateRange === 'week' ? 7 :
+                           that.data.dateRange === 'month' ? 30 : 90
+
+            that.setData({
+              records: records,
+              summary: {
+                totalMinutes: totalMinutes,
+                positiveCount: positiveCount,
+                negativeCount: negativeCount,
+                dailyAvg: Math.round(totalMinutes / dayCount)
+              },
+              loading: false,
+              isEmpty: records.length === 0
+            })
+          })
       })
-    }).catch(function (err) {
-      console.error('加载统计数据失败', err)
-      that.setData({ loading: false })
-      wx.showToast({ title: '加载失败', icon: 'none' })
-    })
+      .catch(function (err) {
+        console.error('加载统计数据失败', err)
+        that.setData({ loading: false })
+        wx.showToast({ title: '加载失败', icon: 'none' })
+      })
   }
 })

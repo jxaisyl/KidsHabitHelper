@@ -1,12 +1,8 @@
-<!--pages/detail/detail.wxml-->
 <view class="container">
-
-  <!-- 加载中 -->
   <view wx:if="{{loading}}" class="empty-state mt-30">
     <text class="empty-text">加载中...</text>
   </view>
 
-  <!-- 添加孩子模式 -->
   <view wx:if="{{mode === 'add' && !loading}}">
     <view class="card">
       <view class="form-group mb-30">
@@ -19,13 +15,18 @@
         />
       </view>
       <view class="form-group mb-30">
-        <text class="form-label">出生日期（选填）</text>
-        <picker mode="date" value="{{newChildBirthDate}}" bindchange="onBirthDateChange">
-          <view class="form-input picker-input">
-            <text wx:if="{{newChildBirthDate}}">{{newChildBirthDate}}</text>
-            <text wx:else class="text-secondary">请选择出生日期</text>
+        <text class="form-label">选择头像</text>
+        <view class="avatar-picker">
+          <view
+            class="avatar-option {{newChildAvatar === item ? 'avatar-selected' : ''}}"
+            wx:for="{{['👦','👧','👶','🧒','👦🏽','👧🏽','🧒🏻','👶🏻']}}"
+            wx:key="*this"
+            data-avatar="{{item}}"
+            bindtap="onAvatarSelect"
+          >
+            <text class="avatar-emoji">{{item}}</text>
           </view>
-        </picker>
+        </view>
       </view>
       <button
         class="btn-primary"
@@ -38,30 +39,19 @@
     </view>
   </view>
 
-  <!-- 查看模式 -->
   <view wx:if="{{mode === 'view' && !loading && child}}">
-
-    <!-- 孩子信息头部 -->
     <view class="child-profile card">
       <view class="profile-top flex-between">
         <view class="flex-row">
           <view class="profile-avatar flex-center">
-            <text class="avatar-text">{{child.name[0]}}</text>
+            <text class="avatar-text">{{child.avatar || child.name[0]}}</text>
           </view>
           <view class="profile-info">
             <text class="profile-name">{{child.name}}</text>
             <text class="profile-date text-secondary">{{today}}</text>
           </view>
         </view>
-        <view class="balance-box">
-          <text class="balance-label">累计余额</text>
-          <text class="balance-amount {{child.balance >= 0 ? 'text-success' : 'text-danger'}}">
-            {{child.balance >= 0 ? '+' : ''}}{{child.balance}} 分钟
-          </text>
-        </view>
       </view>
-
-      <!-- 今日汇总 -->
       <view class="today-summary flex-between mt-20">
         <text class="summary-label">今日合计</text>
         <text class="summary-value {{todayTotal >= 0 ? 'text-success' : 'text-danger'}}">
@@ -70,26 +60,28 @@
       </view>
     </view>
 
-    <!-- 规则快捷按钮 -->
     <view class="section-title mt-30 mb-20">
       <text class="section-text">快捷记录</text>
+      <text class="section-link" bindtap="onGoRuleManage">管理规则 ></text>
+    </view>
+    <view wx:if="{{rules.length === 0}}" class="empty-hint">
+      <text class="text-secondary">暂无规则，请先添加规则</text>
     </view>
     <view class="rules-grid">
       <view
-        class="rule-btn {{item.minutes >= 0 ? 'rule-positive' : 'rule-negative'}}"
+        class="rule-btn {{item.minutesChange >= 0 ? 'rule-positive' : 'rule-negative'}}"
         wx:for="{{rules}}"
         wx:key="_id"
         data-id="{{item._id}}"
         data-name="{{item.name}}"
-        data-minutes="{{item.minutes}}"
+        data-minutes="{{item.minutesChange}}"
         bindtap="onRuleTap"
       >
-        <text class="rule-name">{{item.name}}</text>
-        <text class="rule-minutes">{{item.minutes >= 0 ? '+' : ''}}{{item.minutes}}</text>
+        <text class="rule-name">{{item.icon}} {{item.name}}</text>
+        <text class="rule-minutes">{{item.minutesChange >= 0 ? '+' : ''}}{{item.minutesChange}}</text>
       </view>
     </view>
 
-    <!-- 今日记录列表 -->
     <view class="section-title mt-30 mb-20">
       <text class="section-text">今日记录</text>
     </view>
@@ -103,18 +95,13 @@
     >
       <view class="flex-between">
         <view class="record-info">
-          <text class="record-rule">{{item.ruleName || '自定义'}}</text>
-          <text class="record-time text-secondary">{{item.time || ''}}</text>
+          <text class="record-rule">{{item.ruleIcon}} {{item.ruleName}}</text>
         </view>
         <view class="flex-row">
-          <text class="record-minutes {{item.minutes >= 0 ? 'text-success' : 'text-danger'}}">
-            {{item.minutes >= 0 ? '+' : ''}}{{item.minutes}} 分钟
+          <text class="record-minutes {{item.minutesChange >= 0 ? 'text-success' : 'text-danger'}}">
+            {{item.minutesChange >= 0 ? '+' : ''}}{{item.minutesChange}} 分钟
           </text>
-          <view
-            class="delete-btn"
-            data-id="{{item._id}}"
-            bindtap="onDeleteRecord"
-          >
+          <view class="delete-btn" data-id="{{item._id}}" bindtap="onDeleteRecord">
             <text class="delete-icon">×</text>
           </view>
         </view>

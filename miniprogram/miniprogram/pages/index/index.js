@@ -1,5 +1,6 @@
-// pages/index/index.js
 const util = require('../../utils/util.js')
+const db = wx.cloud.database()
+const app = getApp()
 
 Page({
   data: {
@@ -10,9 +11,7 @@ Page({
   },
 
   onLoad: function () {
-    this.setData({
-      today: util.formatDate(new Date())
-    })
+    this.setData({ today: util.formatDate(new Date()) })
   },
 
   onShow: function () {
@@ -20,39 +19,60 @@ Page({
   },
 
   onPullDownRefresh: function () {
-    this.loadChildren().then(() => {
+    this.loadChildren().then(function () {
       wx.stopPullDownRefresh()
     })
   },
 
   loadChildren: function () {
-    const that = this
+    var that = this
+    var openid = app.globalData.openid
+
+    if (!openid) {
+      setTimeout(function () { that.loadChildren() }, 500)
+      return Promise.resolve()
+    }
+
     that.setData({ loading: true })
 
-    return wx.cloud.callFunction({
-      name: 'sync',
-      data: {
-        action: 'getChildren'
-      }
-    }).then(res => {
-      const children = res.result.data || []
-      that.setData({
-        children: children,
-        loading: false,
-        isEmpty: children.length === 0
+    return db.collection('children')
+      .where({ userId: openid })
+      .orderBy('createdAt', 'asc')
+      .get()
+      .then(function (childrenRes) {
+        var children = childrenRes.data
+
+        return db.collection('records')
+          .where({ userId: openid })
+          .field({ childId: true, minutesChange: true })
+          .get()
+          .then(function (recordsRes) {
+            var balanceMap = {}
+            recordsRes.data.forEach(function (r) {
+              if (!balanceMap[r.childId]) balanceMap[r.childId] = 0
+              balanceMap[r.childId] += r.minutesChange || 0
+            })
+
+            children.forEach(function (c) {
+              c.balance = balanceMap[c._id] || 0
+            })
+
+            that.setData({
+              children: children,
+              loading: false,
+              isEmpty: children.length === 0
+            })
+          })
       })
-    }).catch(err => {
-      console.error('加载孩子列表失败', err)
-      that.setData({ loading: false })
-      wx.showToast({
-        title: '加载失败',
-        icon: 'none'
+      .catch(function (err) {
+        console.error('加载孩子列表失败', err)
+        that.setData({ loading: false })
+        wx.showToast({ title: '加载失败', icon: 'none' })
       })
-    })
   },
 
   onChildTap: function (e) {
-    const childId = e.currentTarget.dataset.id
+    var childId = e.currentTarget.dataset.id
     wx.navigateTo({
       url: '/pages/detail/detail?childId=' + childId
     })
@@ -65,8 +85,10 @@ Page({
   },
 
   onLongPressChild: function (e) {
-    const childId = e.currentTarget.dataset.id
-    const childName = e.currentTarget.dataset.name
+    var that = this
+    var childId = e.currentTarget.dataset.id
+    var childName = e.currentTarget.dataset.name
+
     wx.showActionSheet({
       itemList: ['删除'],
       success: function (res) {
@@ -77,22 +99,38 @@ Page({
             confirmColor: '#F44336',
             success: function (modalRes) {
               if (modalRes.confirm) {
-                wx.cloud.callFunction({
-                  name: 'sync',
-                  data: {
-                    action: 'deleteChild',
-                    data: { childId: childId }
-                  }
-                }).then(function () {
-                  wx.showToast({ title: '已删除', icon: 'success' })
-                  that.loadChildren()
-                })
+                that.deleteChild(childId)
               }
             }
           })
         }
       }
     })
+  },
+
+  deleteChild: function (childId) {
     var that = this
+    var openid = app.globalData.openid
+
+    db.collection('records')
+      .where({ userId: openid, childId: childId })
+      .get()
+      .then(function (res) {
+        var promises = res.data.map(function (r) {
+          return db.collection('records').doc(r._id).remove()
+        })
+        return Promise.all(promises)
+      })
+      .then(function () {
+        return db.collection('children').doc(childId).remove()
+      })
+      .then(function () {
+        wx.showToast({ title: '已删除', icon: 'success' })
+        that.loadChildren()
+      })
+      .catch(function (err) {
+        console.error('删除失败', err)
+        wx.showToast({ title: '删除失败', icon: 'none' })
+      })
   }
 })
