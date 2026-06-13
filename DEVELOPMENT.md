@@ -74,6 +74,23 @@ Flutter App  ──(HTTP API)──→ 云函数 ──→ 微信云数据库
 - [x] 基础配置文件 (`project.config.json`, `app.json`, `app.js`)
 - [x] 小程序前端页面结构
 
+#### 8. 云函数实现 (c27dc34)
+- [x] `login` 云函数 — 双模式：小程序 callFunction 返回 openid + HTTP POST 邮箱密码登录
+- [x] `register` 云函数 — HTTP POST 注册 + SHA-256 密码哈希
+- [x] `sync` 云函数 — REST HTTP API（GET/POST/DELETE）+ sync_meta 管理
+
+#### 9. Flutter 数据源修复 (ab27263)
+- [x] `CloudBaseDatasource` 改为 query-param 路由，匹配 data-schema.md API 规范
+
+#### 10. 小程序前端开发 (513c639, cba6f3c)
+- [x] 首页：小孩列表 + 余额（聚合计算）
+- [x] 详情页：快捷打卡 + 头像选择器
+- [x] 规则管理页：新增 / 编辑 / 删除规则
+- [x] 统计页：按时间段统计
+- [x] 设置页：缓存清除 + 关于
+- [x] 数据模型对齐 data-schema.md（minutesChange, userId, avatar, icon）
+- [x] 改用 `wx.cloud.database()` 直连数据库
+
 ---
 
 ## 项目目录结构
@@ -126,7 +143,10 @@ D:\KidsHabitHelper\
 │   │   ├── components/
 │   │   ├── app.js / app.json / app.wxss
 │   │   └── ...
-│   ├── cloudfunctions/               ← 云函数（待实现）
+│   ├── cloudfunctions/               ← 云函数
+│   │   ├── login/                    ← 登录（双模式）
+│   │   ├── register/                 ← 注册（HTTP + 密码哈希）
+│   │   └── sync/                     ← 数据同步（REST API）
 │   └── project.config.json
 └── shared/                           ← 共享文档
     ├── data-schema.md                ← 数据结构 + API 定义
@@ -140,10 +160,10 @@ D:\KidsHabitHelper\
 ### P0 — 核心功能（发布前必须完成）
 
 #### 1. 云函数实现与部署
-- [ ] 实现 `login` 云函数 — 邮箱密码登录
-- [ ] 实现 `register` 云函数 — 用户注册（含密码哈希）
-- [ ] 实现 `sync` 云函数 — 数据 CRUD（upsert / pull / delete）
-- [ ] 实现 `sync/meta` 云函数 — 同步时间戳管理
+- [x] 实现 `login` 云函数 — 邮箱密码登录
+- [x] 实现 `register` 云函数 — 用户注册（含密码哈希）
+- [x] 实现 `sync` 云函数 — 数据 CRUD（upsert / pull / delete）
+- [x] 实现 `sync/meta` — 同步时间戳管理（集成在 sync 函数中）
 - [ ] 部署云函数到微信云开发环境
 - [ ] 配置云函数 HTTP 触发 URL
 
@@ -164,17 +184,17 @@ D:\KidsHabitHelper\
 ### P1 — 微信小程序端
 
 #### 4. 小程序前端开发
-- [ ] 首页：小孩列表 + 余额显示
-- [ ] 小孩详情页：快捷打卡
-- [ ] 规则管理页：新增 / 编辑 / 删除
-- [ ] 统计页：余额图表 + 记录汇总
-- [ ] 个人中心页：登录 / 同步 / 设置
+- [x] 首页：小孩列表 + 余额显示
+- [x] 小孩详情页：快捷打卡
+- [x] 规则管理页：新增 / 编辑 / 删除
+- [x] 统计页：余额图表 + 记录汇总
+- [x] 设置页：缓存清除 + 关于
 
 #### 5. 小程序云开发集成
-- [ ] 用户登录（微信授权 → openid）
-- [ ] 云数据库直接操作（无需云函数中转）
-- [ ] 数据与 Flutter 端同步（共享同一云数据库）
-- [ ] 小程序端数据模型验证（对齐 `data-schema.md`）
+- [x] 用户登录（微信授权 → openid）
+- [x] 云数据库直接操作（无需云函数中转）
+- [x] 数据与 Flutter 端同步（共享同一云数据库）
+- [x] 小程序端数据模型验证（对齐 `data-schema.md`）
 
 ### P2 — 体验优化
 
@@ -246,7 +266,11 @@ D:\KidsHabitHelper\
 | `009360c` | feat: add repositories, providers, and database tests |
 | `6e5eb33` | feat: implement all UI pages - home, child detail, statistics, settings |
 | `ab6fe24` | feat: add web platform support with drift wasm database |
-| 工作区 | feat: migrate Firebase → CloudBase, directory restructuring |
+| `d7990ff` | feat: migrate Firebase to CloudBase, restructure project |
+| `c27dc34` | feat: rewrite cloud functions with HTTP API and password hashing |
+| `ab27263` | fix: rewrite CloudBaseDatasource to use query-param routing |
+| `513c639` | feat: rewrite mini program pages with direct DB and schema-aligned model |
+| `cba6f3c` | feat: add rule-manage and settings pages, simplify app.js |
 
 ---
 
