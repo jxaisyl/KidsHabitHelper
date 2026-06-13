@@ -1,243 +1,162 @@
-// 云函数 - sync
-// 处理 children、rules、records 三个集合的 CRUD 操作
 const cloud = require('wx-server-sdk')
 
-cloud.init({
-  env: cloud.DYNAMIC_CURRENT_ENV
-})
-
+cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 const db = cloud.database()
 const _ = db.command
 
+// Token 验证：从 Authorization header 解析 uid
+function verifyToken(event) {
+  const authHeader = (event.headers && event.headers.authorization) ||
+                     (event.headers && event.headers.Authorization) || ''
+  const token = authHeader.replace('Bearer ', '').trim()
+  if (!token) return null
+  // token 即为 users 集合中的 _id（注册/登录时返回）
+  return token
+}
+
 exports.main = async (event, context) => {
-  const wxContext = cloud.getWXContext()
-  const openid = wxContext.OPENID
-  const { action, data } = event
+  const method = event.httpMethod
+
+  // --- Token 验证 ---
+  const uid = verifyToken(event)
+  if (!uid) {
+    return { statusCode: 401, error: 'unauthorized', message: '未授权，请先登录' }
+  }
+
+  // 解析 query 参数
+  const query = event.queryString || {}
+  const collection = query.collection
+
+  // 解析 body
+  let body = {}
+  if (event.body) {
+    if (typeof event.body === 'string') {
+      try { body = JSON.parse(event.body) } catch (e) { body = {} }
+    } else {
+      body = event.body
+    }
+  }
 
   try {
-    switch (action) {
-
-      // ========== 孩子 (Children) ==========
-
-      case 'getChildren': {
-        const result = await db.collection('children')
-          .where({ _openid: openid })
-          .orderBy('createdAt', 'asc')
-          .get()
-        return { code: 200, data: result.data }
-      }
-
-      case 'getChildDetail': {
-        const { childId, date } = data
-
-        // 获取孩子信息
-        const childRes = await db.collection('children')
-          .doc(childId)
-          .get()
-        const child = childRes.data
-
-        // 获取所有规则
-        const rulesRes = await db.collection('rules')
-          .where({ _openid: openid })
-          .orderBy('minutes', 'desc')
-          .get()
-        const rules = rulesRes.data
-
-        // 获取今日记录
-        const todayStart = new Date(date + ' 00:00:00')
-        const todayEnd = new Date(date + ' 23:59:59')
-        const recordsRes = await db.collection('records')
-          .where({
-            _openid: openid,
-            childId: childId,
-            date: date
-          })
-          .orderBy('timestamp', 'desc')
-          .get()
-        const todayRecords = recordsRes.data
-
-        // 补充规则名称到记录中
-        const ruleMap = {}
-        rules.forEach(function (r) { ruleMap[r._id] = r })
-        todayRecords.forEach(function (r) {
-          if (r.ruleId && ruleMap[r.ruleId]) {
-            r.ruleName = ruleMap[r.ruleId].name
-          }
-        })
-
-        return {
-          code: 200,
-          child: child,
-          rules: rules,
-          todayRecords: todayRecords
+    // ===== GET /sync?collection=children&since=... =====
+    if (method === 'GET') {
+      // sync meta: GET /sync?collection=meta
+      if (collection === 'meta') {
+        const { data: meta } = await db.collection('sync_meta')
+          .where({ userId: uid }).limit(1).get()
+        if (meta.length === 0) {
+          return { lastSyncTimestamp: null }
         }
+        return { lastSyncTimestamp: meta[0].lastSyncTimestamp || null }
       }
 
-      case 'addChild': {
-        const { name, birthDate } = data
-        const result = await db.collection('children').add({
-          data: {
-            _openid: openid,
-            name: name,
-            birthDate: birthDate || '',
-            balance: 0,
-            createdAt: db.serverDate(),
-            updatedAt: db.serverDate()
-          }
+      // 数据拉取
+      if (!['children', 'rules', 'records'].includes(collection)) {
+        return { statusCode: 400, error: 'invalid-collection', message: '无效的集合名称' }
+      }
+
+      let queryBuilder = db.collection(collection).where({ userId: uid })
+      if (query.since) {
+        queryBuilder = db.collection(collection).where({
+          userId: uid,
+          updatedAt: _.gt(new Date(query.since))
         })
-        return { code: 200, data: { _id: result._id }, message: '添加成功' }
       }
 
-      case 'updateChild': {
-        const { childId, name, birthDate } = data
-        const updateData = { updatedAt: db.serverDate() }
-        if (name !== undefined) updateData.name = name
-        if (birthDate !== undefined) updateData.birthDate = birthDate
+      const { data } = await queryBuilder.get()
 
-        await db.collection('children').doc(childId).update({ data: updateData })
-        return { code: 200, message: '更新成功' }
-      }
-
-      case 'deleteChild': {
-        const { childId } = data
-
-        // 删除孩子关联的所有记录
-        const records = await db.collection('records')
-          .where({ _openid: openid, childId: childId })
-          .get()
-        const deletePromises = records.data.map(function (r) {
-          return db.collection('records').doc(r._id).remove()
-        })
-        await Promise.all(deletePromises)
-
-        // 删除孩子
-        await db.collection('children').doc(childId).remove()
-
-        return { code: 200, message: '删除成功' }
-      }
-
-      // ========== 规则 (Rules) ==========
-
-      case 'getRules': {
-        const result = await db.collection('rules')
-          .where({ _openid: openid })
-          .orderBy('minutes', 'desc')
-          .get()
-        return { code: 200, data: result.data }
-      }
-
-      case 'addRule': {
-        const { name, minutes, icon, description } = data
-        const result = await db.collection('rules').add({
-          data: {
-            _openid: openid,
-            name: name,
-            minutes: minutes,
-            icon: icon || '',
-            description: description || '',
-            createdAt: db.serverDate(),
-            updatedAt: db.serverDate()
-          }
-        })
-        return { code: 200, data: { _id: result._id }, message: '添加成功' }
-      }
-
-      case 'updateRule': {
-        const { ruleId, name, minutes, icon, description } = data
-        const updateData = { updatedAt: db.serverDate() }
-        if (name !== undefined) updateData.name = name
-        if (minutes !== undefined) updateData.minutes = minutes
-        if (icon !== undefined) updateData.icon = icon
-        if (description !== undefined) updateData.description = description
-
-        await db.collection('rules').doc(ruleId).update({ data: updateData })
-        return { code: 200, message: '更新成功' }
-      }
-
-      case 'deleteRule': {
-        const { ruleId } = data
-        await db.collection('rules').doc(ruleId).remove()
-        return { code: 200, message: '删除成功' }
-      }
-
-      // ========== 记录 (Records) ==========
-
-      case 'addRecord': {
-        const { childId, ruleId, date, timestamp } = data
-
-        // 获取规则详情
-        const ruleRes = await db.collection('rules').doc(ruleId).get()
-        const rule = ruleRes.data
-        const minutes = rule.minutes
-
-        // 创建记录
-        const result = await db.collection('records').add({
-          data: {
-            _openid: openid,
-            childId: childId,
-            ruleId: ruleId,
-            ruleName: rule.name,
-            minutes: minutes,
-            date: date,
-            timestamp: timestamp || Date.now(),
-            createdAt: db.serverDate()
-          }
-        })
-
-        // 更新孩子余额
-        await db.collection('children').doc(childId).update({
-          data: {
-            balance: _.inc(minutes),
-            updatedAt: db.serverDate()
-          }
-        })
-
-        return { code: 200, data: { _id: result._id, minutes: minutes }, message: '记录成功' }
-      }
-
-      case 'deleteRecord': {
-        const { recordId } = data
-
-        // 获取记录详情以回滚余额
-        const recordRes = await db.collection('records').doc(recordId).get()
-        const record = recordRes.data
-
-        // 删除记录
-        await db.collection('records').doc(recordId).remove()
-
-        // 回滚余额
-        await db.collection('children').doc(record.childId).update({
-          data: {
-            balance: _.inc(-record.minutes),
-            updatedAt: db.serverDate()
-          }
-        })
-
-        return { code: 200, message: '删除成功' }
-      }
-
-      // ========== 统计 ==========
-
-      case 'getStatistics': {
-        const { childId, startDate, endDate } = data
-
-        const recordsRes = await db.collection('records')
-          .where({
-            _openid: openid,
-            childId: childId,
-            date: _.gte(startDate).and(_.lte(endDate))
-          })
-          .orderBy('date', 'desc')
-          .get()
-
-        return { code: 200, records: recordsRes.data }
-      }
-
-      default:
-        return { code: 400, message: '未知操作: ' + action }
+      // 统一返回格式：将 _id 映射为 id
+      return data.map(function (item) {
+        item.id = item._id
+        delete item._id
+        return item
+      })
     }
+
+    // ===== POST /sync =====
+    if (method === 'POST') {
+      // sync meta update
+      if (body.collection === 'meta' || collection === 'meta') {
+        const ts = body.lastSyncTimestamp || (body.data && body.data.lastSyncTimestamp)
+        const { data: existing } = await db.collection('sync_meta')
+          .where({ userId: uid }).limit(1).get()
+
+        if (existing.length > 0) {
+          await db.collection('sync_meta').doc(existing[0]._id).update({
+            data: { lastSyncTimestamp: ts || new Date().toISOString() }
+          })
+        } else {
+          await db.collection('sync_meta').add({
+            data: {
+              userId: uid,
+              lastSyncTimestamp: ts || new Date().toISOString()
+            }
+          })
+        }
+        return { ok: true }
+      }
+
+      // 数据 upsert
+      const coll = body.collection
+      if (!['children', 'rules', 'records'].includes(coll)) {
+        return { statusCode: 400, error: 'invalid-collection', message: '无效的集合名称' }
+      }
+
+      const itemData = body.data || {}
+      const docId = itemData.id
+
+      if (!docId) {
+        return { statusCode: 400, error: 'missing-id', message: '缺少文档 ID' }
+      }
+
+      // 构建存储数据：添加 userId，移除 id 字段
+      const storeData = { userId: uid }
+      const fieldsToCopy = Object.assign({}, itemData)
+      delete fieldsToCopy.id
+
+      Object.assign(storeData, fieldsToCopy)
+      storeData.updatedAt = new Date().toISOString()
+
+      // 尝试 upsert：先查再更新或插入
+      const { data: existing } = await db.collection(coll)
+        .where({ _id: docId, userId: uid }).limit(1).get()
+
+      if (existing.length > 0) {
+        await db.collection(coll).doc(docId).update({ data: storeData })
+      } else {
+        storeData._id = docId
+        await db.collection(coll).add({ data: storeData })
+      }
+
+      return { ok: true }
+    }
+
+    // ===== DELETE /sync?collection=children&id=xxx =====
+    if (method === 'DELETE') {
+      if (!['children', 'rules', 'records'].includes(collection)) {
+        return { statusCode: 400, error: 'invalid-collection', message: '无效的集合名称' }
+      }
+      const docId = query.id
+      if (!docId) {
+        return { statusCode: 400, error: 'missing-id', message: '缺少文档 ID' }
+      }
+
+      // 验证文档属于该用户
+      const { data: doc } = await db.collection(collection)
+        .where({ _id: docId, userId: uid }).limit(1).get()
+
+      if (doc.length === 0) {
+        return { statusCode: 404, error: 'not-found', message: '文档不存在' }
+      }
+
+      await db.collection(collection).doc(docId).remove()
+      return { ok: true }
+    }
+
+    return { statusCode: 405, error: 'method-not-allowed', message: '不支持的请求方法' }
+
   } catch (err) {
-    console.error('sync 云函数错误:', err)
-    return { code: 500, message: '服务器错误: ' + err.message }
+    console.error('sync error:', err)
+    return { statusCode: 500, error: 'internal-error', message: '服务器错误' }
   }
 }

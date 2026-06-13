@@ -1,7 +1,7 @@
 {
   "name": "sync",
   "version": "1.0.0",
-  "description": "数据同步云函数 - 处理 children/rules/records 的 CRUD",
+  "description": "数据同步云函数 - HTTP REST API for Flutter",
   "main": "index.js",
   "dependencies": {
     "wx-server-sdk": "~2.6.3"
