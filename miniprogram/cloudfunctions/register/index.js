@@ -8,35 +8,46 @@ function hashPassword(password) {
   return crypto.createHash('sha256').update(password).digest('hex')
 }
 
+function httpResponse(statusCode, data) {
+  return {
+    statusCode: statusCode,
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data)
+  }
+}
+
 exports.main = async (event, context) => {
-  // 只支持 HTTP 触发（Flutter 端注册）
   let email, password
   if (typeof event.body === 'string') {
-    const params = new URLSearchParams(event.body)
-    email = params.get('email')
-    password = params.get('password')
+    try {
+      const parsed = JSON.parse(event.body)
+      email = parsed.email
+      password = parsed.password
+    } catch (e) {
+      const params = new URLSearchParams(event.body)
+      email = params.get('email')
+      password = params.get('password')
+    }
   } else if (event.body) {
     email = event.body.email
     password = event.body.password
   }
 
   if (!email || !password) {
-    return { statusCode: 400, error: 'invalid-params', message: '邮箱和密码不能为空' }
+    return httpResponse(400, { error: 'invalid-params', message: '邮箱和密码不能为空' })
   }
 
   if (password.length < 6) {
-    return { statusCode: 400, error: 'weak-password', message: '密码强度太弱' }
+    return httpResponse(400, { error: 'weak-password', message: '密码强度太弱' })
   }
 
-  // 检查邮箱是否已注册
   const { data: existing } = await db.collection('users')
     .where({ email }).limit(1).get()
 
   if (existing.length > 0) {
-    return { statusCode: 400, error: 'email-already-in-use', message: '该邮箱已被注册' }
+    return httpResponse(400, { error: 'email-already-in-use', message: '该邮箱已被注册' })
   }
 
-  // 创建用户
   const result = await db.collection('users').add({
     data: {
       email,
@@ -45,5 +56,5 @@ exports.main = async (event, context) => {
     }
   })
 
-  return { token: result._id, uid: result._id }
+  return httpResponse(200, { token: result._id, uid: result._id })
 }

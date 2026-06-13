@@ -2,7 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../auth/cloudbase_auth_service.dart';
 
 /// 云函数 API 基地址
-const cloudBaseApiBase = 'https://cloudbase-d7gdlreoq9bfaba40.service.tcloudbase.com';
+const cloudBaseApiBase = 'https://cloudbase-d7gdlreoq9bfaba40-1442979720.ap-shanghai.app.tcloudbase.com';
 
 final authServiceProvider = Provider<CloudBaseAuthService>((ref) {
   final service = CloudBaseAuthService(cloudBaseApiBase);
