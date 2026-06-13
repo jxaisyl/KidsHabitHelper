@@ -8,54 +8,25 @@ function hashPassword(password) {
   return crypto.createHash('sha256').update(password).digest('hex')
 }
 
-// CloudBase HTTP 云函数返回格式
-function httpResponse(statusCode, data) {
-  return {
-    statusCode: statusCode,
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(data)
-  }
-}
-
 exports.main = async (event, context) => {
-  // HTTP 触发模式（Flutter 端调用）
-  if (event.httpMethod === 'POST') {
-    let email, password
-    if (typeof event.body === 'string') {
-      try {
-        const parsed = JSON.parse(event.body)
-        email = parsed.email
-        password = parsed.password
-      } catch (e) {
-        const params = new URLSearchParams(event.body)
-        email = params.get('email')
-        password = params.get('password')
-      }
-    } else if (event.body) {
-      email = event.body.email
-      password = event.body.password
-    }
-
-    if (!email || !password) {
-      return httpResponse(400, { error: 'invalid-params', message: '邮箱和密码不能为空' })
-    }
-
+  // Flutter 端通过 invokecloudfunction 调用（event 包含 email/password）
+  if (event.email && event.password) {
     const { data: users } = await db.collection('users')
-      .where({ email }).limit(1).get()
+      .where({ email: event.email }).limit(1).get()
 
     if (users.length === 0) {
-      return httpResponse(401, { error: 'user-not-found', message: '用户不存在' })
+      return { error: 'user-not-found', message: '用户不存在' }
     }
 
     const user = users[0]
-    if (user.passwordHash !== hashPassword(password)) {
-      return httpResponse(401, { error: 'wrong-password', message: '邮箱或密码错误' })
+    if (user.passwordHash !== hashPassword(event.password)) {
+      return { error: 'wrong-password', message: '邮箱或密码错误' }
     }
 
-    return httpResponse(200, { token: user._id, uid: user._id })
+    return { token: user._id, uid: user._id }
   }
 
-  // callFunction 模式（小程序端调用）— 返回 openid
+  // 小程序端 callFunction — 返回 openid
   const wxContext = cloud.getWXContext()
   return {
     openid: wxContext.OPENID,

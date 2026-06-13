@@ -1,11 +1,13 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../auth/cloudbase_auth_service.dart';
 
-/// 云函数 API 基地址
-const cloudBaseApiBase = 'https://cloudbase-d7gdlreoq9bfaba40-1442979720.ap-shanghai.app.tcloudbase.com';
+/// 微信云开发配置
+const wxAppId = 'wx96ca310e00f3f1f0';
+const wxAppSecret = '63279c5965704e90eb44d585ea6093a0';
+const wxCloudEnvId = 'cloudbase-d7gdlreoq9bfaba40';
 
 final authServiceProvider = Provider<CloudBaseAuthService>((ref) {
-  final service = CloudBaseAuthService(cloudBaseApiBase);
+  final service = CloudBaseAuthService(wxAppId, wxAppSecret, wxCloudEnvId);
   ref.onDispose(() => service.dispose());
   return service;
 });

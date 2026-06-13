@@ -9,8 +9,8 @@ final syncServiceProvider = Provider<SyncService?>((ref) {
   if (uid == null) return null;
 
   final db = ref.watch(databaseProvider);
-  final token = ref.watch(authServiceProvider).currentToken ?? uid;
-  final datasource = CloudBaseDatasource(cloudBaseApiBase, token);
+  final userToken = ref.watch(authServiceProvider).currentToken ?? uid;
+  final datasource = CloudBaseDatasource(wxAppId, wxAppSecret, wxCloudEnvId, userToken);
   final service = SyncService(db, datasource);
 
   ref.onDispose(() => service.dispose());
@@ -23,7 +23,7 @@ final syncStatusProvider = StreamProvider<SyncStatus?>((ref) {
   return service.statusStream;
 });
 
-/// 登录后自动执行首次同步：先拉取云端数据，再把本地新数据推送上去
+/// 登录后自动执行首次同步
 final initialSyncProvider = FutureProvider<void>((ref) async {
   final service = ref.watch(syncServiceProvider);
   if (service == null) return;
