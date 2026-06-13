@@ -1,0 +1,99 @@
+<!--pages/statistics/statistics.wxml-->
+<view class="container">
+
+  <!-- 孩子选择器 -->
+  <view class="card">
+    <view class="picker-row flex-between">
+      <text class="picker-label">选择孩子</text>
+      <picker
+        range="{{children}}"
+        range-key="name"
+        value="{{children.length > 0 ? children.findIndex(c => c._id === selectedChildId) : 0}}"
+        bindchange="onChildChange"
+      >
+        <view class="picker-value flex-row">
+          <text>{{selectedChildName || '请选择'}}</text>
+          <text class="picker-arrow">▸</text>
+        </view>
+      </picker>
+    </view>
+  </view>
+
+  <!-- 时间范围选择 -->
+  <view class="date-range flex-row mt-20">
+    <view
+      class="range-btn {{dateRange === 'week' ? 'range-active' : ''}}"
+      data-range="week"
+      bindtap="onDateRangeChange"
+    >
+      <text>近一周</text>
+    </view>
+    <view
+      class="range-btn {{dateRange === 'month' ? 'range-active' : ''}}"
+      data-range="month"
+      bindtap="onDateRangeChange"
+    >
+      <text>近一月</text>
+    </view>
+    <view
+      class="range-btn {{dateRange === 'quarter' ? 'range-active' : ''}}"
+      data-range="quarter"
+      bindtap="onDateRangeChange"
+    >
+      <text>近三月</text>
+    </view>
+  </view>
+
+  <!-- 汇总卡片 -->
+  <view class="summary-cards flex-row mt-20" wx:if="{{!isEmpty}}">
+    <view class="summary-card card flex-1">
+      <text class="summary-title">总积分</text>
+      <text class="summary-num {{summary.totalMinutes >= 0 ? 'text-success' : 'text-danger'}}">
+        {{summary.totalMinutes >= 0 ? '+' : ''}}{{summary.totalMinutes}}
+      </text>
+      <text class="summary-unit">分钟</text>
+    </view>
+    <view class="summary-card card flex-1">
+      <text class="summary-title">日均</text>
+      <text class="summary-num text-primary">{{summary.dailyAvg}}</text>
+      <text class="summary-unit">分钟</text>
+    </view>
+    <view class="summary-card card flex-1">
+      <text class="summary-title">次数</text>
+      <text class="summary-num text-primary">+{{summary.positiveCount}} / -{{summary.negativeCount}}</text>
+    </view>
+  </view>
+
+  <!-- 加载中 -->
+  <view wx:if="{{loading}}" class="empty-state mt-30">
+    <text class="empty-text">加载中...</text>
+  </view>
+
+  <!-- 空状态 -->
+  <view wx:if="{{isEmpty && !loading}}" class="empty-state mt-30">
+    <text class="empty-icon">📊</text>
+    <text class="empty-text">该时间段内暂无记录</text>
+  </view>
+
+  <!-- 记录列表 -->
+  <view class="record-list mt-20" wx:if="{{!isEmpty && !loading}}">
+    <view class="section-title mb-20">
+      <text class="section-text">详细记录</text>
+    </view>
+    <view
+      class="record-item card"
+      wx:for="{{records}}"
+      wx:key="_id"
+    >
+      <view class="flex-between">
+        <view class="record-left">
+          <text class="record-date">{{item.date}}</text>
+          <text class="record-rule-name">{{item.ruleName || '自定义'}}</text>
+        </view>
+        <text class="record-val {{item.minutes >= 0 ? 'text-success' : 'text-danger'}}">
+          {{item.minutes >= 0 ? '+' : ''}}{{item.minutes}} 分钟
+        </text>
+      </view>
+    </view>
+  </view>
+</view>

@@ -1,0 +1,44 @@
+{
+  "miniprogramRoot": "miniprogram/",
+  "cloudfunctionRoot": "cloudfunctions/",
+  "setting": {
+    "urlCheck": true,
+    "es6": true,
+    "enhance": true,
+    "postcss": true,
+    "preloadBackgroundData": false,
+    "minified": true,
+    "newFeature": true,
+    "coverView": true,
+    "nodeModules": false,
+    "autoAudits": false,
+    "showShadowRootInWxmlPanel": true,
+    "scopeDataCheck": false,
+    "uglifyFileName": false,
+    "checkInvalidKey": true,
+    "checkSiteMap": true,
+    "uploadWithSourceMap": true,
+    "compileHotReLoad": false,
+    "babelSetting": {
+      "ignore": [],
+      "disablePlugins": [],
+      "outputPath": ""
+    }
+  },
+  "appid": "your-appid-here",
+  "projectname": "kids-habit-helper",
+  "cloudfunctionTemplateRoot": "",
+  "condition": {},
+  "srcMiniprogramRoot": "miniprogram/",
+  "compileType": "miniprogram",
+  "description": "习惯养成助手 - 儿童习惯记录与奖励追踪小程序",
+  "libVersion": "3.3.4",
+  "packOptions": {
+    "ignore": [
+      {
+        "type": "file",
+        "value": ".gitignore"
+      }
+    ]
+  }
+}

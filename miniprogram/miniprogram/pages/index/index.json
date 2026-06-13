@@ -1,0 +1,6 @@
+{
+  "usingComponents": {},
+  "navigationBarTitleText": "习惯养成助手",
+  "enablePullDownRefresh": true,
+  "backgroundColor": "#F5F5F5"
+}

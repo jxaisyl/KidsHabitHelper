@@ -1,0 +1,115 @@
+/* pages/statistics/statistics.wxss */
+
+/* 选择器 */
+.picker-row {
+  padding: 4rpx 0;
+}
+
+.picker-label {
+  font-size: 28rpx;
+  color: var(--text-secondary);
+}
+
+.picker-value {
+  font-size: 30rpx;
+  color: var(--primary-color);
+  font-weight: bold;
+}
+
+.picker-arrow {
+  margin-left: 10rpx;
+  font-size: 24rpx;
+  color: var(--text-hint);
+}
+
+/* 时间范围 */
+.date-range {
+  gap: 16rpx;
+}
+
+.range-btn {
+  flex: 1;
+  text-align: center;
+  padding: 16rpx 0;
+  border-radius: 12rpx;
+  background-color: var(--card-bg);
+  font-size: 26rpx;
+  color: var(--text-secondary);
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.06);
+}
+
+.range-btn:active {
+  opacity: 0.8;
+}
+
+.range-active {
+  background-color: var(--primary-color);
+  color: #FFFFFF;
+  font-weight: bold;
+  box-shadow: 0 4rpx 12rpx rgba(0, 150, 136, 0.3);
+}
+
+/* 汇总卡片 */
+.summary-cards {
+  gap: 16rpx;
+}
+
+.summary-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 24rpx 10rpx;
+}
+
+.summary-title {
+  font-size: 22rpx;
+  color: var(--text-secondary);
+  margin-bottom: 8rpx;
+}
+
+.summary-num {
+  font-size: 32rpx;
+  font-weight: bold;
+}
+
+.summary-unit {
+  font-size: 20rpx;
+  color: var(--text-hint);
+  margin-top: 4rpx;
+}
+
+/* 记录列表 */
+.section-title {
+  padding: 0 10rpx;
+}
+
+.section-text {
+  font-size: 30rpx;
+  font-weight: bold;
+  color: var(--text-primary);
+}
+
+.record-item {
+  padding: 20rpx 24rpx;
+}
+
+.record-left {
+  display: flex;
+  flex-direction: column;
+}
+
+.record-date {
+  font-size: 24rpx;
+  color: var(--text-secondary);
+}
+
+.record-rule-name {
+  font-size: 28rpx;
+  color: var(--text-primary);
+  margin-top: 4rpx;
+}
+
+.record-val {
+  font-size: 30rpx;
+  font-weight: bold;
+}

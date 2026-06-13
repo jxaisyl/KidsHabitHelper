@@ -1,0 +1,124 @@
+<!--pages/detail/detail.wxml-->
+<view class="container">
+
+  <!-- 加载中 -->
+  <view wx:if="{{loading}}" class="empty-state mt-30">
+    <text class="empty-text">加载中...</text>
+  </view>
+
+  <!-- 添加孩子模式 -->
+  <view wx:if="{{mode === 'add' && !loading}}">
+    <view class="card">
+      <view class="form-group mb-30">
+        <text class="form-label">孩子姓名</text>
+        <input
+          class="form-input"
+          placeholder="请输入孩子姓名"
+          value="{{newChildName}}"
+          bindinput="onNameInput"
+        />
+      </view>
+      <view class="form-group mb-30">
+        <text class="form-label">出生日期（选填）</text>
+        <picker mode="date" value="{{newChildBirthDate}}" bindchange="onBirthDateChange">
+          <view class="form-input picker-input">
+            <text wx:if="{{newChildBirthDate}}">{{newChildBirthDate}}</text>
+            <text wx:else class="text-secondary">请选择出生日期</text>
+          </view>
+        </picker>
+      </view>
+      <button
+        class="btn-primary"
+        bindtap="onSubmitAddChild"
+        disabled="{{submitting}}"
+        loading="{{submitting}}"
+      >
+        保存
+      </button>
+    </view>
+  </view>
+
+  <!-- 查看模式 -->
+  <view wx:if="{{mode === 'view' && !loading && child}}">
+
+    <!-- 孩子信息头部 -->
+    <view class="child-profile card">
+      <view class="profile-top flex-between">
+        <view class="flex-row">
+          <view class="profile-avatar flex-center">
+            <text class="avatar-text">{{child.name[0]}}</text>
+          </view>
+          <view class="profile-info">
+            <text class="profile-name">{{child.name}}</text>
+            <text class="profile-date text-secondary">{{today}}</text>
+          </view>
+        </view>
+        <view class="balance-box">
+          <text class="balance-label">累计余额</text>
+          <text class="balance-amount {{child.balance >= 0 ? 'text-success' : 'text-danger'}}">
+            {{child.balance >= 0 ? '+' : ''}}{{child.balance}} 分钟
+          </text>
+        </view>
+      </view>
+
+      <!-- 今日汇总 -->
+      <view class="today-summary flex-between mt-20">
+        <text class="summary-label">今日合计</text>
+        <text class="summary-value {{todayTotal >= 0 ? 'text-success' : 'text-danger'}}">
+          {{todayTotal >= 0 ? '+' : ''}}{{todayTotal}} 分钟
+        </text>
+      </view>
+    </view>
+
+    <!-- 规则快捷按钮 -->
+    <view class="section-title mt-30 mb-20">
+      <text class="section-text">快捷记录</text>
+    </view>
+    <view class="rules-grid">
+      <view
+        class="rule-btn {{item.minutes >= 0 ? 'rule-positive' : 'rule-negative'}}"
+        wx:for="{{rules}}"
+        wx:key="_id"
+        data-id="{{item._id}}"
+        data-name="{{item.name}}"
+        data-minutes="{{item.minutes}}"
+        bindtap="onRuleTap"
+      >
+        <text class="rule-name">{{item.name}}</text>
+        <text class="rule-minutes">{{item.minutes >= 0 ? '+' : ''}}{{item.minutes}}</text>
+      </view>
+    </view>
+
+    <!-- 今日记录列表 -->
+    <view class="section-title mt-30 mb-20">
+      <text class="section-text">今日记录</text>
+    </view>
+    <view wx:if="{{todayRecords.length === 0}}" class="empty-hint">
+      <text class="text-secondary">今天还没有记录</text>
+    </view>
+    <view
+      class="record-item card"
+      wx:for="{{todayRecords}}"
+      wx:key="_id"
+    >
+      <view class="flex-between">
+        <view class="record-info">
+          <text class="record-rule">{{item.ruleName || '自定义'}}</text>
+          <text class="record-time text-secondary">{{item.time || ''}}</text>
+        </view>
+        <view class="flex-row">
+          <text class="record-minutes {{item.minutes >= 0 ? 'text-success' : 'text-danger'}}">
+            {{item.minutes >= 0 ? '+' : ''}}{{item.minutes}} 分钟
+          </text>
+          <view
+            class="delete-btn"
+            data-id="{{item._id}}"
+            bindtap="onDeleteRecord"
+          >
+            <text class="delete-icon">×</text>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>

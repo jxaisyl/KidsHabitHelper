@@ -1,0 +1,214 @@
+/* pages/detail/detail.wxss */
+
+/* 孩子资料 */
+.child-profile {
+  padding: 30rpx;
+}
+
+.profile-top {
+  margin-bottom: 10rpx;
+}
+
+.profile-avatar {
+  width: 100rpx;
+  height: 100rpx;
+  border-radius: 50%;
+  background-color: var(--primary-color);
+  margin-right: 24rpx;
+}
+
+.profile-avatar .avatar-text {
+  font-size: 44rpx;
+  color: #FFFFFF;
+  font-weight: bold;
+}
+
+.profile-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.profile-name {
+  font-size: 36rpx;
+  font-weight: bold;
+  color: var(--text-primary);
+}
+
+.profile-date {
+  font-size: 24rpx;
+  margin-top: 6rpx;
+}
+
+.balance-box {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.balance-label {
+  font-size: 22rpx;
+  color: var(--text-secondary);
+  margin-bottom: 6rpx;
+}
+
+.balance-amount {
+  font-size: 34rpx;
+  font-weight: bold;
+}
+
+/* 今日汇总 */
+.today-summary {
+  padding-top: 20rpx;
+  border-top: 1rpx solid var(--divider-color);
+}
+
+.summary-label {
+  font-size: 28rpx;
+  color: var(--text-secondary);
+}
+
+.summary-value {
+  font-size: 32rpx;
+  font-weight: bold;
+}
+
+/* 表单 */
+.form-group {
+  margin-bottom: 20rpx;
+}
+
+.form-label {
+  display: block;
+  font-size: 28rpx;
+  color: var(--text-secondary);
+  margin-bottom: 10rpx;
+}
+
+.form-input {
+  border: 1rpx solid var(--divider-color);
+  border-radius: 8rpx;
+  padding: 16rpx 20rpx;
+  font-size: 30rpx;
+  background-color: #FAFAFA;
+}
+
+.picker-input {
+  color: var(--text-primary);
+}
+
+/* 规则网格 */
+.section-title {
+  padding: 0 10rpx;
+}
+
+.section-text {
+  font-size: 30rpx;
+  font-weight: bold;
+  color: var(--text-primary);
+}
+
+.rules-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16rpx;
+}
+
+.rule-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20rpx 28rpx;
+  border-radius: 12rpx;
+  min-width: 140rpx;
+}
+
+.rule-positive {
+  background-color: #E8F5E9;
+  border: 1rpx solid #A5D6A7;
+}
+
+.rule-negative {
+  background-color: #FFEBEE;
+  border: 1rpx solid #EF9A9A;
+}
+
+.rule-btn:active {
+  opacity: 0.7;
+  transform: scale(0.95);
+}
+
+.rule-name {
+  font-size: 26rpx;
+  color: var(--text-primary);
+  font-weight: bold;
+  margin-bottom: 6rpx;
+}
+
+.rule-minutes {
+  font-size: 24rpx;
+  font-weight: bold;
+}
+
+.rule-positive .rule-minutes {
+  color: var(--success-color);
+}
+
+.rule-negative .rule-minutes {
+  color: var(--danger-color);
+}
+
+/* 记录列表 */
+.empty-hint {
+  text-align: center;
+  padding: 40rpx 0;
+}
+
+.record-item {
+  padding: 20rpx 24rpx;
+}
+
+.record-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.record-rule {
+  font-size: 28rpx;
+  color: var(--text-primary);
+}
+
+.record-time {
+  font-size: 22rpx;
+  margin-top: 4rpx;
+}
+
+.record-minutes {
+  font-size: 30rpx;
+  font-weight: bold;
+  margin-right: 16rpx;
+}
+
+.delete-btn {
+  width: 48rpx;
+  height: 48rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background-color: #FFEBEE;
+}
+
+.delete-icon {
+  font-size: 32rpx;
+  color: var(--danger-color);
+  line-height: 1;
+}
+
+.delete-btn:active {
+  background-color: var(--danger-color);
+}
+
+.delete-btn:active .delete-icon {
+  color: #FFFFFF;
+}
