@@ -5,17 +5,17 @@ import 'package:kids_habit_helper/providers/timer_provider.dart';
 
 void main() {
   group('TimerNotifier', () {
-    test('startTimer 设置 running 状态', () {
+    test('startTimer 设置 running 状态', () async {
       final container = _container(now: () => DateTime(2026, 6, 14, 10, 0, 0));
       final notifier = container.read(timerProvider.notifier);
-      notifier.startTimer(child: _child(), rule: _rule(), durationSec: 1800);
+      await notifier.startTimer(child: _child(), rule: _rule(), durationSec: 1800);
       final state = container.read(timerProvider);
       expect(state, isNotNull);
       expect(state!.status, TimerStatus.running);
       expect(state.durationSec, 1800);
     });
 
-    test('tick 到 0 时进入 ended', () {
+    test('tick 到 0 时进入 ended', () async {
       final start = DateTime(2026, 6, 14, 10, 0, 0);
       final sound = _FakeSound();
       var callCount = 0;
@@ -34,7 +34,7 @@ void main() {
       ]);
       addTearDown(container.dispose);
       final notifier = container.read(timerProvider.notifier);
-      notifier.startTimer(child: _child(), rule: _rule(), durationSec: 1800);
+      await notifier.startTimer(child: _child(), rule: _rule(), durationSec: 1800);
       notifier.tick();
       expect(container.read(timerProvider)!.status, TimerStatus.ended);
       expect(sound.played, true);
@@ -52,7 +52,7 @@ void main() {
       ]);
       addTearDown(container.dispose);
       final notifier = container.read(timerProvider.notifier);
-      notifier.startTimer(child: _child(), rule: _rule(), durationSec: 1800);
+      await notifier.startTimer(child: _child(), rule: _rule(), durationSec: 1800);
       await notifier.cancel();
       expect(container.read(timerProvider), isNull);
       expect(scheduler.cancelled, true);

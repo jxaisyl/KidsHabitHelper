@@ -41,11 +41,11 @@ class TimerNotifier extends Notifier<ActiveTimer?> {
     return null;
   }
 
-  void startTimer({
+  Future<void> startTimer({
     required ({int id, String name, String avatar}) child,
     required ({int id, String name, String icon, int minutesChange}) rule,
     required int durationSec,
-  }) {
+  }) async {
     final t = ActiveTimer(
       childId: child.id,
       childName: child.name,
@@ -59,8 +59,8 @@ class TimerNotifier extends Notifier<ActiveTimer?> {
       status: TimerStatus.running,
     );
     state = t;
-    storage.save(t.toJson());
-    scheduler.scheduleAt(t.fireAt, '计时结束：${rule.name}', '给 ${child.name} 打卡');
+    await storage.save(t.toJson());
+    await scheduler.scheduleAt(t.fireAt, '计时结束：${rule.name}', '给 ${child.name} 打卡');
     _startTicker();
   }
 

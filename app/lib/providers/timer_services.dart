@@ -86,8 +86,12 @@ class LocalNotificationScheduler implements NotificationScheduler {
   Future<void> cancel() => plugin.cancel(_notifyId);
 }
 
+bool _tzInitialized = false;
 tz.TZDateTime _toTz(DateTime time) {
-  tzdata.initializeTimeZones();
+  if (!_tzInitialized) {
+    tzdata.initializeTimeZones();
+    _tzInitialized = true;
+  }
   return tz.TZDateTime.from(time, tz.local);
 }
 
