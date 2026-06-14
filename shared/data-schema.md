@@ -125,7 +125,47 @@
 }
 ```
 
-### 1.5 users 集合 — 用户账户
+### 1.5 timers 集合 — 计时器后台通知
+
+存储小程序端启动的计时器，供定时触发器云函数 `timer-notify` 扫描并发送订阅消息。Flutter 端不写入此集合（Flutter 用本地通知）。记录在倒计时结束后由云函数标记 `notified`，并在 25 小时后被清理。
+
+| 字段 | 类型 | 必填 | 默认值 | 说明 |
+|------|------|------|--------|------|
+| `_id` | String | 自动 | — | 云数据库自动生成的文档 ID |
+| `userId` | String | 是 | — | 所属用户 ID（openid），用于数据隔离 |
+| `childId` | String | 是 | — | 关联的小孩 ID |
+| `childName` | String | 是 | — | 小孩姓名（冗余存储，供消息模板使用） |
+| `ruleId` | String | 是 | — | 关联的规则 ID |
+| `ruleName` | String | 是 | — | 规则名称 |
+| `ruleIcon` | String | 否 | `"⏰"` | 规则图标 |
+| `minutesChange` | Int | 是 | — | 规则分钟变化量 |
+| `startAt` | DateTime | 是 | — | 计时开始时间，ISO 8601 |
+| `duration` | Int | 是 | — | 计时总时长（秒），范围 1–86400 |
+| `fireAt` | DateTime | 是 | — | 计划到期时间 = startAt + duration，ISO 8601 |
+| `notified` | Bool | 是 | `false` | 是否已发送订阅消息 |
+| `createdAt` | DateTime | 是 | 当前时间 | 创建时间，ISO 8601 |
+
+**示例文档：**
+
+```
+{
+  "_id": "timer_xxx",
+  "userId": "oXXXX",
+  "childId": "child_xxx",
+  "childName": "小明",
+  "ruleId": "rule_xxx",
+  "ruleName": "完成作业",
+  "ruleIcon": "📖",
+  "minutesChange": 30,
+  "startAt": "2026-06-14T10:00:00.000Z",
+  "duration": 1800,
+  "fireAt": "2026-06-14T10:30:00.000Z",
+  "notified": false,
+  "createdAt": "2026-06-14T10:00:00.000Z"
+}
+```
+
+### 1.6 users 集合 — 用户账户
 
 存储通过邮箱注册的用户账户信息。
 
