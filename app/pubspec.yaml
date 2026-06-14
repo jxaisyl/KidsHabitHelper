@@ -20,6 +20,9 @@ dependencies:
   sqlite3: ^3.3.0
   http: ^1.4.0
   shared_preferences: ^2.5.3
+  flutter_local_notifications: ^19.0.0
+  audioplayers: ^6.1.0
+  timezone: ^0.10.1
 
 dev_dependencies:
   flutter_test:
@@ -30,3 +33,5 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  assets:
+    - assets/sounds/
