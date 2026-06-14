@@ -122,6 +122,7 @@ class _TimerPageState extends ConsumerState<TimerPage> {
   }
 
   Future<void> _onStart() async {
+    _confirmShown = false;
     final child = ref.read(childrenProvider).whenOrNull<List<ChildrenData>>(
           data: (list) => list,
         )?.where((c) => c.id == widget.childId).firstOrNull;
@@ -211,10 +212,11 @@ class _TimerPageState extends ConsumerState<TimerPage> {
                 minutesChange: timer.minutesChange,
                 note: '计时器打卡',
               );
+              if (!mounted) return;
               ref.invalidate(balanceProvider(timer.childId));
               await ref.read(timerProvider.notifier).clearAfterConfirm();
               if (!mounted) return;
-              Navigator.of(context).pop();
+              Navigator.pop(context);
             },
             child: const Text('确认打卡'),
           ),
