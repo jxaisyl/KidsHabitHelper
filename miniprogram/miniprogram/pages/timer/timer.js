@@ -50,6 +50,11 @@ Page({
 
   onUnload: function () {
     this._stopTicking()
+    this._stopSound()
+    if (this._audio) {
+      this._audio.destroy()
+      this._audio = null
+    }
     wx.setKeepScreenOn({ keepScreenOn: false })
   },
 
