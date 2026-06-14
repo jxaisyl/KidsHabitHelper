@@ -1,0 +1,22 @@
+.setup-area, .running-area { padding: 10rpx 0; }
+.time-picker { display: flex; justify-content: space-around; margin-top: 20rpx; }
+.time-cell { display: flex; align-items: baseline; }
+.time-num { font-size: 60rpx; font-weight: bold; color: #009688; }
+.time-unit { font-size: 24rpx; color: #999; margin-left: 8rpx; }
+.rules-list { margin-top: 16rpx; }
+.rule-row {
+  display: flex; align-items: center; padding: 20rpx 16rpx;
+  border-bottom: 1rpx solid #eee;
+}
+.rule-row.rule-selected { background: #e0f2f1; }
+.rule-icon { font-size: 36rpx; margin-right: 16rpx; }
+.rule-name { flex: 1; font-size: 28rpx; }
+.rule-minutes { font-size: 28rpx; font-weight: bold; }
+.countdown-card { text-align: center; padding: 60rpx 20rpx; }
+.countdown-display { font-size: 96rpx; font-weight: bold; color: #009688; font-family: monospace; }
+.progress-bar { height: 12rpx; background: #eee; border-radius: 6rpx; margin-top: 30rpx; overflow: hidden; }
+.progress-fill { height: 100%; background: #009688; transition: width 1s linear; }
+.info-card { display: flex; justify-content: space-between; align-items: center; padding: 24rpx; }
+.info-rule { font-size: 32rpx; }
+.info-minutes { font-size: 32rpx; font-weight: bold; }
+.btn-cancel { background: #fff; color: #F44336; border: 1rpx solid #F44336; margin-top: 40rpx; }

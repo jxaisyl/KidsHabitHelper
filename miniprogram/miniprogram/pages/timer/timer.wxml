@@ -1,0 +1,62 @@
+<view class="container">
+  <view wx:if="{{mode === 'setup'}}" class="setup-area">
+    <view class="card">
+      <view class="form-label">设置时长</view>
+      <view class="time-picker">
+        <picker mode="selector" range="{{24}}" value="{{hours}}" bindchange="onHourChange">
+          <view class="time-cell">
+            <text class="time-num">{{hours}}</text>
+            <text class="time-unit">时</text>
+          </view>
+        </picker>
+        <picker mode="selector" range="{{60}}" value="{{minutes}}" bindchange="onMinuteChange">
+          <view class="time-cell">
+            <text class="time-num">{{minutes}}</text>
+            <text class="time-unit">分</text>
+          </view>
+        </picker>
+        <picker mode="selector" range="{{60}}" value="{{seconds}}" bindchange="onSecondChange">
+          <view class="time-cell">
+            <text class="time-num">{{seconds}}</text>
+            <text class="time-unit">秒</text>
+          </view>
+        </picker>
+      </view>
+    </view>
+
+    <view class="card mt-20">
+      <view class="form-label">选择规则</view>
+      <view class="rules-list">
+        <view
+          wx:for="{{rules}}"
+          wx:key="_id"
+          class="rule-row {{selectedRuleId === item._id ? 'rule-selected' : ''}}"
+          data-id="{{item._id}}"
+          bindtap="onRuleSelect"
+        >
+          <text class="rule-icon">{{item.icon}}</text>
+          <text class="rule-name">{{item.name}}</text>
+          <text class="rule-minutes {{item.minutesChange >= 0 ? 'text-success' : 'text-danger'}}">
+            {{item.minutesChange >= 0 ? '+' : ''}}{{item.minutesChange}}
+          </text>
+        </view>
+      </view>
+    </view>
+
+    <button class="btn-primary mt-20" bindtap="onStart">开始计时</button>
+  </view>
+
+  <view wx:if="{{mode === 'running' || mode === 'ended'}}" class="running-area">
+    <view class="countdown-card card">
+      <text class="countdown-display">{{display}}</text>
+      <view class="progress-bar">
+        <view class="progress-fill" style="width: {{progress * 100}}%"></view>
+      </view>
+    </view>
+    <view class="info-card card mt-20" wx:if="{{selectedRule}}">
+      <text class="info-rule">{{selectedRule.icon}} {{selectedRule.name}}</text>
+      <text class="info-minutes">{{selectedRule.minutesChange >= 0 ? '+' : ''}}{{selectedRule.minutesChange}} 分钟</text>
+    </view>
+    <button wx:if="{{mode === 'running'}}" class="btn-cancel mt-20" bindtap="onCancel">取消计时</button>
+  </view>
+</view>
