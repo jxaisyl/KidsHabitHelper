@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import '../database/app_database.dart';
 import '../providers/child_provider.dart';
 import '../providers/rule_provider.dart';
@@ -81,6 +82,12 @@ class ChildDetailPage extends ConsumerWidget {
                 );
               }).toList(),
             ),
+          ),
+          const SizedBox(height: 16),
+          FilledButton.tonalIcon(
+            onPressed: () => context.go('/child/$childId/timer'),
+            icon: const Icon(Icons.timer),
+            label: const Text('计时器'),
           ),
           const SizedBox(height: 24),
 

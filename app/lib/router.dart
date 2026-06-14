@@ -5,6 +5,7 @@ import 'pages/home_page.dart';
 import 'pages/statistics_page.dart';
 import 'pages/settings_page.dart';
 import 'pages/child_detail_page.dart';
+import 'pages/timer_page.dart';
 import 'pages/auth/login_page.dart';
 import 'providers/auth_provider.dart';
 
@@ -54,6 +55,18 @@ GoRouter createRouter(WidgetRef ref) {
                     return MaterialPage(
                         child: ChildDetailPage(childId: childId));
                   },
+                  routes: [
+                    GoRoute(
+                      path: 'timer',
+                      name: 'timer',
+                      pageBuilder: (context, state) {
+                        final childId =
+                            int.parse(state.pathParameters['id']!);
+                        return MaterialPage(
+                            child: TimerPage(childId: childId));
+                      },
+                    ),
+                  ],
                 ),
               ],
             ),
