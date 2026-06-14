@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/data/latest_all.dart' as tzdata;
 import 'providers/auth_provider.dart';
 import 'providers/timer_provider.dart';
@@ -11,23 +10,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   tzdata.initializeTimeZones();
 
-  // 初始化本地通知（计时器用）
-  final notifications = FlutterLocalNotificationsPlugin();
-  const init = InitializationSettings(
-    android: AndroidInitializationSettings('@mipmap/ic_launcher'),
-    iOS: DarwinInitializationSettings(),
-  );
-  await notifications.initialize(init);
-  await notifications
-      .resolvePlatformSpecificImplementation<
-          AndroidFlutterLocalNotificationsPlugin>()
-      ?.createNotificationChannel(const AndroidNotificationChannel(
-        'timer_channel',
-        '计时器',
-        importance: Importance.high,
-      ));
-
-  // 计时器服务依赖注入
+  // 计时器服务依赖注入（LocalNotificationScheduler 内部会惰性初始化通知插件）
   final storage = PrefsTimerStorage();
   final scheduler = LocalNotificationScheduler();
   final sound = AudioPlayerSound();
