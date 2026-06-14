@@ -198,7 +198,7 @@ Page({
     // 播放提示音
     if (!this._audio) {
       this._audio = wx.createInnerAudioContext()
-      this._audio.src = '/assets/audio/alert.mp3'
+      this._audio.src = '/assets/audio/alert.wav'
       this._audio.loop = true
     }
     this._audio.play()
