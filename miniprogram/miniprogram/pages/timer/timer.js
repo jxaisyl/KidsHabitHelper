@@ -166,7 +166,7 @@ Page({
     var that = this
     this._stopTicking()
     var tick = function () {
-      var remain = timerUtil.remainingSeconds(that.data.startAt, that.data.duration, Date.now())
+      var remain = timerUtil.remainingSeconds(that.data.startAt, that.data.duration, new Date())
       that.setData({
         display: timerUtil.formatHMS(remain),
         progress: 1 - (remain / that.data.duration)
