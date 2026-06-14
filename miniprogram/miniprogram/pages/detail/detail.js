@@ -28,6 +28,7 @@ Page({
       wx.setNavigationBarTitle({ title: '添加孩子' })
     } else if (options.childId) {
       this.setData({ childId: options.childId })
+      wx.setStorageSync('lastChildId', options.childId)
       this.loadChildData()
     }
   },
@@ -130,20 +131,9 @@ Page({
   },
 
   onRuleTap: function (e) {
-    var that = this
     var ruleId = e.currentTarget.dataset.id
-    var ruleName = e.currentTarget.dataset.name
     var ruleMinutes = e.currentTarget.dataset.minutes
-
-    wx.showModal({
-      title: '确认记录',
-      content: '为"' + that.data.child.name + '"记录：' + ruleName + '（' + (ruleMinutes >= 0 ? '+' : '') + ruleMinutes + '分钟）',
-      success: function (res) {
-        if (res.confirm) {
-          that.addRecord(ruleId, ruleMinutes)
-        }
-      }
-    })
+    this.addRecord(ruleId, ruleMinutes)
   },
 
   addRecord: function (ruleId, minutesChange) {
@@ -198,6 +188,12 @@ Page({
   onGoRuleManage: function () {
     wx.navigateTo({
       url: '/pages/rule-manage/rule-manage'
+    })
+  },
+
+  onGoTimer: function () {
+    wx.navigateTo({
+      url: '/pages/timer/timer?childId=' + this.data.childId
     })
   }
 })

@@ -13,6 +13,19 @@ App({
     this.getOpenId()
   },
 
+  onShow: function () {
+    var saved = wx.getStorageSync('activeTimer')
+    if (saved && saved.status === 'running') {
+      var fireTs = new Date(saved.fireAt).getTime()
+      if (Date.now() >= fireTs) {
+        // 已到期：跳转到 timer 页让用户确认（timer.js onLoad 会处理）
+        wx.navigateTo({
+          url: '/pages/timer/timer?childId=' + saved.childId
+        })
+      }
+    }
+  },
+
   getOpenId: function () {
     var that = this
     wx.cloud.callFunction({

@@ -62,7 +62,10 @@
 
     <view class="section-title mt-30 mb-20">
       <text class="section-text">快捷记录</text>
-      <text class="section-link" bindtap="onGoRuleManage">管理规则 ></text>
+      <view class="flex-row">
+        <text class="section-link" data-childid="{{child._id}}" bindtap="onGoTimer">⏱ 计时器</text>
+        <text class="section-link" style="margin-left: 20rpx;" bindtap="onGoRuleManage">管理规则 ></text>
+      </view>
     </view>
     <view wx:if="{{rules.length === 0}}" class="empty-hint">
       <text class="text-secondary">暂无规则，请先添加规则</text>
