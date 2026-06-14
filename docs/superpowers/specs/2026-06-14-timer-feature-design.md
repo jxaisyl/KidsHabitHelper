@@ -120,7 +120,7 @@
 |------|------|
 | 前台倒计时 | `setInterval` 每秒 tick，基于 `startAt + duration - now` 计算剩余 |
 | 屏幕常亮 | `wx.setKeepScreenOn({ keepScreenOn: true })`，结束时复位 false |
-| 结束提示音 | 打包 `assets/audio/alert.mp3`，用 `wx.createInnerAudioContext()` 播放 |
+| 结束提示音 | 打包 `assets/audio/alert.wav`，用 `wx.createInnerAudioContext()` 播放 |
 | 后台通知 | 启动时 `wx.requestSubscribeMessage` 请求模板授权；授权后写 `timers` 集合 |
 | 切后台/恢复 | `onShow` 读本地 `activeTimer`，按 `fireAt` 重算剩余并恢复 `setInterval` |
 | 被杀后恢复 | `onLoad` 检查本地 `activeTimer.status`，若 `running` 且已过期 → 直接弹确认框 |
@@ -172,7 +172,7 @@ Riverpod 管理 `ActiveTimer` 状态：
 ```yaml
 flutter:
   assets:
-    - assets/sounds/alert.mp3
+    - assets/sounds/alert.wav
 ```
 
 ### 6.5 平台权限配置
@@ -238,10 +238,10 @@ cloudfunctions/timer-notify/
 ## 8. 提示音资源
 
 两端需要一个短促的提示音（约 1–3 秒，类似闹铃）：
-- 小程序：`miniprogram/miniprogram/assets/audio/alert.mp3`
-- Flutter：`app/assets/sounds/alert.mp3`
+- 小程序：`miniprogram/miniprogram/assets/audio/alert.wav`
+- Flutter：`app/assets/sounds/alert.wav`
 
-资源文件需用户自行准备（免版权的短提示音即可），实现阶段先用占位文件占位。
+> **实现备注：** 原设计稿写的是 `.mp3`，但实现环境无 MP3 编码器，改用 WAV（微信 `InnerAudioContext` 与 Flutter `audioplayers` 均支持）。实际生成的是一个 0.6 秒的双音叮咚（880Hz→1320Hz）。文件清单中其它出现 `alert.mp3` 的地方均指同一个 `alert.wav` 资源。
 
 ---
 
@@ -259,7 +259,7 @@ cloudfunctions/timer-notify/
 [用户取消] → 清除 activeTimer + timers 文档 → status=cancelled → 界面返回详情页
 ```
 
-**单计时器约束：** 启动新计时时若已有 `activeTimer.status == running`，弹确认框询问是否替换。
+**单计时器约束：** 启动新计时时若已有运行中的计时器，直接覆盖（静默替换）——实现时采用此更简化的语义，不再弹确认框。
 
 ---
 
@@ -267,7 +267,7 @@ cloudfunctions/timer-notify/
 
 **小程序端（新增）：**
 - `miniprogram/miniprogram/pages/timer/timer.{wxml,wxss,js,json}`
-- `miniprogram/miniprogram/assets/audio/alert.mp3`
+- `miniprogram/miniprogram/assets/audio/alert.wav`
 
 **小程序端（修改）：**
 - `miniprogram/miniprogram/pages/detail/detail.{wxml,js}` — 计时器入口按钮
@@ -278,7 +278,7 @@ cloudfunctions/timer-notify/
 - `app/lib/pages/timer_page.dart`
 - `app/lib/providers/timer_provider.dart`
 - `app/lib/models/active_timer.dart`
-- `app/assets/sounds/alert.mp3`
+- `app/assets/sounds/alert.wav`
 
 **Flutter 端（修改）：**
 - `app/lib/pages/child_detail_page.dart` — 计时器入口按钮
