@@ -1,6 +1,6 @@
 # KidsHabitHelper 开发进度与后续计划
 
-> 最后更新：2026-06-13
+> 最后更新：2026-06-14
 
 ---
 
@@ -90,6 +90,15 @@ Flutter App  ──(HTTP API)──→ 云函数 ──→ 微信云数据库
 - [x] 设置页：缓存清除 + 关于
 - [x] 数据模型对齐 data-schema.md（minutesChange, userId, avatar, icon）
 - [x] 改用 `wx.cloud.database()` 直连数据库
+
+#### 11. 计时器功能（24h 内、秒级）
+- [x] 小程序：`pages/timer` 页面 + `utils/timer.js` 纯逻辑
+- [x] 小程序：前台 setKeepScreenOn + InnerAudioContext 提示音 + 结束确认打卡
+- [x] 小程序：订阅消息后台通知（需用户每次授权）
+- [x] 云函数 `timer-notify`：定时触发器扫描 timers 集合发订阅消息
+- [x] Flutter：`TimerProvider`（Riverpod）+ `ActiveTimer` 模型
+- [x] Flutter：`flutter_local_notifications` 后台定时通知 + `audioplayers` 提示音
+- [x] Flutter：计时器页面 + 详情页入口
 
 ---
 
@@ -254,6 +263,9 @@ D:\KidsHabitHelper\
 | http | ^1.4.0 | HTTP 请求 |
 | shared_preferences | ^2.5.3 | 本地存储 |
 | sqlite3 | ^3.3.0 | Web WASM 数据库 |
+| flutter_local_notifications | ^19.0.0 | 本地定时通知（计时器） |
+| audioplayers | ^6.1.0 | 计时器提示音 |
+| timezone | ^0.10.1 | 通知时区处理 |
 
 ---
 
