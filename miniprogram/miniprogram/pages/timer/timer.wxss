@@ -20,3 +20,6 @@
 .info-rule { font-size: 32rpx; }
 .info-minutes { font-size: 32rpx; font-weight: bold; }
 .btn-cancel { background: #fff; color: #F44336; border: 1rpx solid #F44336; margin-top: 40rpx; }
+.rule-edit-icon { font-size: 32rpx; color: #009688; padding: 0 8rpx; margin-left: 12rpx; }
+.add-rule-link { text-align: center; padding: 20rpx 0 4rpx; color: #009688; font-size: 28rpx; }
+.add-rule-link:active { opacity: 0.6; }

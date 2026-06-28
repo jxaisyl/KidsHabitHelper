@@ -14,7 +14,9 @@ Page({
     newChildName: '',
     newChildAvatar: '',
     submitting: false,
-    loading: true
+    loading: true,
+    activeTimer: null,
+    timerDisplay: ''
   },
 
   avatarOptions: ['👦', '👧', '👶', '🧒', '👦🏽', '👧🏽', '🧒🏻', '👶🏻'],
@@ -37,6 +39,11 @@ Page({
     if (this.data.childId && this.data.mode === 'view') {
       this.loadChildData()
     }
+    this._checkActiveTimer()
+  },
+
+  onUnload: function () {
+    this._stopTimerTick()
   },
 
   loadChildData: function () {
@@ -194,6 +201,61 @@ Page({
   onGoTimer: function () {
     wx.navigateTo({
       url: '/pages/timer/timer?childId=' + this.data.childId
+    })
+  },
+
+  _checkActiveTimer: function () {
+    var saved = wx.getStorageSync('activeTimer')
+    if (saved && saved.status === 'running' && saved.childId === this.data.childId) {
+      this.setData({ activeTimer: saved })
+      this._startTimerTick()
+    } else {
+      this.setData({ activeTimer: null })
+      this._stopTimerTick()
+    }
+  },
+
+  _startTimerTick: function () {
+    var that = this
+    this._stopTimerTick()
+    var tick = function () {
+      var saved = that.data.activeTimer
+      if (!saved) return
+      var fireTs = new Date(saved.fireAt).getTime()
+      var remain = Math.max(0, Math.floor((fireTs - Date.now()) / 1000))
+      function p(n) { return n < 10 ? '0' + n : '' + n }
+      var h = Math.floor(remain / 3600)
+      var m = Math.floor((remain % 3600) / 60)
+      var s = remain % 60
+      that.setData({ timerDisplay: p(h) + ':' + p(m) + ':' + p(s) })
+      if (remain <= 0) {
+        that._stopTimerTick()
+        that.setData({ activeTimer: null })
+      }
+    }
+    tick()
+    this._timerTickHandle = setInterval(tick, 1000)
+  },
+
+  _stopTimerTick: function () {
+    if (this._timerTickHandle) {
+      clearInterval(this._timerTickHandle)
+      this._timerTickHandle = null
+    }
+  },
+
+  onCancelTimer: function () {
+    var that = this
+    wx.showModal({
+      title: '取消计时',
+      content: '确定取消当前计时？',
+      success: function (res) {
+        if (res.confirm) {
+          app._clearActiveTimer()
+          that.setData({ activeTimer: null })
+          that._stopTimerTick()
+        }
+      }
     })
   }
 })

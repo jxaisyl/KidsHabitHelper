@@ -7,7 +7,8 @@ Page({
     showForm: false,
     editingRuleId: '',
     formName: '',
-    formMinutesChange: '',
+    formSign: 1,
+    formAbsMinutes: '30',
     formIcon: '',
     submitting: false,
     loading: true
@@ -15,7 +16,8 @@ Page({
 
   iconOptions: ['✅', '📖', '🛁', '🌙', '🏃', '🧹', '🍎', '💪', '❌', '📱', '😢', '⏰'],
 
-  onLoad: function () {
+  onLoad: function (options) {
+    this._pendingOptions = options
     this.loadRules()
   },
 
@@ -39,6 +41,16 @@ Page({
       .get()
       .then(function (res) {
         that.setData({ rules: res.data, loading: false })
+        // 处理来自 timer 页的跳转参数（仅首次）
+        if (that._pendingOptions) {
+          if (that._pendingOptions.action === 'add') {
+            that.onShowAddForm()
+          } else if (that._pendingOptions.edit) {
+            var rule = res.data.filter(function (r) { return r._id === that._pendingOptions.edit })[0]
+            if (rule) that.enterEditMode(rule)
+          }
+          that._pendingOptions = null
+        }
       })
       .catch(function (err) {
         console.error('加载规则失败', err)
@@ -51,20 +63,25 @@ Page({
       showForm: true,
       editingRuleId: '',
       formName: '',
-      formMinutesChange: '30',
+      formSign: 1,
+      formAbsMinutes: '30',
       formIcon: '✅'
     })
   },
 
-  onEditRule: function (e) {
-    var rule = e.currentTarget.dataset.rule
+  enterEditMode: function (rule) {
     this.setData({
       showForm: true,
       editingRuleId: rule._id,
       formName: rule.name,
-      formMinutesChange: String(rule.minutesChange),
+      formSign: rule.minutesChange >= 0 ? 1 : -1,
+      formAbsMinutes: String(Math.abs(rule.minutesChange)),
       formIcon: rule.icon || '✅'
     })
+  },
+
+  onEditRule: function (e) {
+    this.enterEditMode(e.currentTarget.dataset.rule)
   },
 
   onCancelForm: function () {
@@ -76,7 +93,11 @@ Page({
   },
 
   onMinutesInput: function (e) {
-    this.setData({ formMinutesChange: e.detail.value })
+    this.setData({ formAbsMinutes: e.detail.value })
+  },
+
+  onSelectSign: function (e) {
+    this.setData({ formSign: Number(e.currentTarget.dataset.sign) })
   },
 
   onIconSelect: function (e) {
@@ -87,13 +108,14 @@ Page({
     var that = this
     var openid = app.globalData.openid
     var name = that.data.formName.trim()
-    var minutes = parseInt(that.data.formMinutesChange)
+    var absMinutes = parseInt(that.data.formAbsMinutes)
+    var minutes = absMinutes * that.data.formSign
 
     if (!name) {
       wx.showToast({ title: '请输入规则名称', icon: 'none' })
       return
     }
-    if (isNaN(minutes) || minutes === 0) {
+    if (isNaN(absMinutes) || absMinutes === 0) {
       wx.showToast({ title: '请输入有效的分钟数', icon: 'none' })
       return
     }

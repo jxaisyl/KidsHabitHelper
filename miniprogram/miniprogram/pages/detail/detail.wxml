@@ -60,12 +60,31 @@
       </view>
     </view>
 
+    <view wx:if="{{activeTimer}}" class="timer-running-card">
+      <view class="timer-running-info">
+        <text class="timer-running-icon">⏱</text>
+        <view class="timer-running-text">
+          <text class="timer-running-display">{{timerDisplay}}</text>
+          <text class="timer-running-desc">{{activeTimer.ruleIcon}} {{activeTimer.ruleName}} → {{activeTimer.childName}}</text>
+        </view>
+      </view>
+      <view class="timer-running-cancel" catchtap="onCancelTimer">取消</view>
+    </view>
+
+    <view wx:else class="timer-entry" bindtap="onGoTimer">
+      <view class="timer-entry-left">
+        <text class="timer-entry-icon">⏱</text>
+        <view class="timer-entry-text">
+          <text class="timer-entry-title">开始计时</text>
+          <text class="timer-entry-desc">倒计时结束自动提醒打卡</text>
+        </view>
+      </view>
+      <text class="timer-entry-arrow">›</text>
+    </view>
+
     <view class="section-title mt-30 mb-20">
       <text class="section-text">快捷记录</text>
-      <view class="flex-row">
-        <text class="section-link" data-childid="{{child._id}}" bindtap="onGoTimer">⏱ 计时器</text>
-        <text class="section-link" style="margin-left: 20rpx;" bindtap="onGoRuleManage">管理规则 ></text>
-      </view>
+      <text class="section-link" bindtap="onGoRuleManage">管理规则 ></text>
     </view>
     <view wx:if="{{rules.length === 0}}" class="empty-hint">
       <text class="text-secondary">暂无规则，请先添加规则</text>

@@ -31,10 +31,14 @@ migrate_working_dir/
 .pub-cache/
 .pub/
 /build/
+app/build/
 /coverage/
 
 # Symbolication related
 app.*.symbols
+
+# Wechat devtools private config
+miniprogram/project.private.config.json
 
 # Obfuscation related
 app.*.map.json

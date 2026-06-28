@@ -212,3 +212,102 @@
 .delete-btn:active .delete-icon {
   color: #FFFFFF;
 }
+
+/* 计时器入口 */
+.timer-entry {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: linear-gradient(135deg, #009688, #4DB6AC);
+  border-radius: 16rpx;
+  padding: 28rpx 30rpx;
+  box-shadow: 0 4rpx 16rpx rgba(0, 150, 136, 0.3);
+}
+
+.timer-entry-left {
+  display: flex;
+  align-items: center;
+}
+
+.timer-entry-icon {
+  font-size: 48rpx;
+  margin-right: 20rpx;
+}
+
+.timer-entry-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.timer-entry-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #FFFFFF;
+}
+
+.timer-entry-desc {
+  font-size: 24rpx;
+  color: rgba(255, 255, 255, 0.85);
+  margin-top: 4rpx;
+}
+
+.timer-entry-arrow {
+  font-size: 40rpx;
+  color: #FFFFFF;
+  opacity: 0.8;
+}
+
+.timer-entry:active {
+  opacity: 0.85;
+}
+
+/* 计时进行中卡片 */
+.timer-running-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: linear-gradient(135deg, #FF9800, #FFB74D);
+  border-radius: 16rpx;
+  padding: 24rpx 30rpx;
+  box-shadow: 0 4rpx 16rpx rgba(255, 152, 0, 0.3);
+}
+
+.timer-running-info {
+  display: flex;
+  align-items: center;
+}
+
+.timer-running-icon {
+  font-size: 44rpx;
+  margin-right: 20rpx;
+}
+
+.timer-running-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.timer-running-display {
+  font-size: 40rpx;
+  font-weight: bold;
+  color: #FFFFFF;
+  font-family: monospace;
+}
+
+.timer-running-desc {
+  font-size: 24rpx;
+  color: rgba(255, 255, 255, 0.9);
+  margin-top: 4rpx;
+}
+
+.timer-running-cancel {
+  font-size: 26rpx;
+  color: #FFFFFF;
+  padding: 8rpx 20rpx;
+  border: 1rpx solid rgba(255, 255, 255, 0.6);
+  border-radius: 8rpx;
+}
+
+.timer-running-cancel:active {
+  background-color: rgba(255, 255, 255, 0.2);
+}

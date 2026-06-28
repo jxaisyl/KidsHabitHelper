@@ -113,3 +113,23 @@
   font-size: 30rpx;
   font-weight: bold;
 }
+
+/* 折线图 */
+.chart-section {
+  padding: 24rpx;
+}
+
+.chart-header {
+  margin-bottom: 12rpx;
+}
+
+.chart-title {
+  font-size: 30rpx;
+  font-weight: bold;
+  color: var(--text-primary);
+}
+
+.trend-chart {
+  width: 100%;
+  height: 360rpx;
+}

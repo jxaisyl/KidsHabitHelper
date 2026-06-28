@@ -71,6 +71,50 @@
   background-color: #E0F2F1;
 }
 
+.sign-group {
+  gap: 16rpx;
+  margin-bottom: 20rpx;
+}
+
+.sign-option {
+  flex: 1;
+  height: 76rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10rpx;
+  border: 2rpx solid var(--divider-color);
+  background-color: #F5F5F5;
+}
+
+.sign-option:active {
+  opacity: 0.7;
+}
+
+.sign-option-text {
+  font-size: 28rpx;
+  font-weight: bold;
+  color: #666;
+}
+
+.sign-active-positive {
+  border-color: #4CAF50;
+  background-color: #E8F5E9;
+}
+
+.sign-active-positive .sign-option-text {
+  color: #2E7D32;
+}
+
+.sign-active-negative {
+  border-color: #F44336;
+  background-color: #FFEBEE;
+}
+
+.sign-active-negative .sign-option-text {
+  color: #C62828;
+}
+
 .form-actions {
   gap: 20rpx;
   margin-top: 20rpx;

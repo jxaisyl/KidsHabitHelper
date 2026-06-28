@@ -56,6 +56,13 @@
     <text class="empty-text">该时间段内暂无记录</text>
   </view>
 
+  <view class="chart-section card mt-20" wx:if="{{!isEmpty && !loading}}">
+    <view class="chart-header">
+      <text class="chart-title">每日趋势</text>
+    </view>
+    <canvas type="2d" id="trendChart" class="trend-chart"></canvas>
+  </view>
+
   <view class="record-list mt-20" wx:if="{{!isEmpty && !loading}}">
     <view class="section-title mb-20">
       <text class="section-text">详细记录</text>

@@ -1,7 +1,7 @@
 {
   "name": "timer-notify",
   "version": "1.0.0",
-  "description": "定时扫描 timers 集合，发送订阅消息",
+  "description": "定时扫描 timers 集合，通过 HTTP API 发送订阅消息",
   "main": "index.js",
   "dependencies": {
     "wx-server-sdk": "~2.6.3"

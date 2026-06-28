@@ -54,12 +54,20 @@
     </view>
 
     <view class="form-group mb-30">
-      <text class="form-label">分钟变化（正数奖励，负数扣减）</text>
+      <text class="form-label">分钟数</text>
+      <view class="sign-group flex-row">
+        <view class="sign-option {{formSign > 0 ? 'sign-active-positive' : ''}}" data-sign="1" bindtap="onSelectSign">
+          <text class="sign-option-text">＋ 奖励</text>
+        </view>
+        <view class="sign-option {{formSign < 0 ? 'sign-active-negative' : ''}}" data-sign="-1" bindtap="onSelectSign">
+          <text class="sign-option-text">－ 扣减</text>
+        </view>
+      </view>
       <input
         class="form-input"
-        type="number"
-        placeholder="例如：30 或 -15"
-        value="{{formMinutesChange}}"
+        type="digit"
+        placeholder="30"
+        value="{{formAbsMinutes}}"
         bindinput="onMinutesInput"
       />
     </view>

@@ -41,7 +41,10 @@ Page({
       return Promise.resolve()
     }
 
-    that.setData({ loading: true })
+    // 已有数据时不显示加载状态，避免闪烁
+    if (that.data.children.length === 0) {
+      that.setData({ loading: true })
+    }
 
     return db.collection('children')
       .where({ userId: openid })
@@ -64,6 +67,19 @@ Page({
             children.forEach(function (c) {
               c.balance = balanceMap[c._id] || 0
             })
+
+            // 首次启动且有孩子时，直接跳转到上次访问的孩子
+            var isFirstLaunch = !app.globalData._indexLoaded
+            app.globalData._indexLoaded = true
+
+            if (isFirstLaunch && children.length > 0) {
+              var lastId = wx.getStorageSync('lastChildId')
+              var target = lastId && children.find(function (c) { return c._id === lastId })
+              if (!target) target = children[0]
+              wx.navigateTo({
+                url: '/pages/detail/detail?childId=' + target._id
+              })
+            }
 
             that.setData({
               children: children,
